@@ -15,15 +15,21 @@ import {
   Bell,
 } from "lucide-react";
 import type { Venue } from "@/lib/venues";
-import { ROOM_TYPES } from "@/lib/venues";
-import { formatSom, plural } from "@/lib/utils";
 import { useTelegram, haptic } from "@/lib/telegram";
+import { useT } from "@/i18n/LocaleProvider";
 
 const SERVICE_RATE = 0.03; // комиссия Davra с задатка
 const TIME_SLOTS = ["12:00", "14:00", "16:00", "18:00", "19:00", "20:00", "21:00"];
-const STEPS = ["Кабинка", "Дата", "Заказ", "Оплата"];
 
 export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => void }) {
+  const { t, money } = useT();
+  const STEPS = [
+    t("booking.steps.room"),
+    t("booking.steps.date"),
+    t("booking.steps.order"),
+    t("booking.steps.pay"),
+  ];
+
   const [step, setStep] = useState(0);
   const [roomId, setRoomId] = useState(venue.rooms[0]?.id ?? "");
   const [date, setDate] = useState("");
@@ -85,13 +91,13 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
           {/* Header */}
           <div className="flex items-center justify-between border-b border-sand px-5 py-4">
             <div>
-              <div className="text-xs font-medium text-muted">Бронирование</div>
+              <div className="text-xs font-medium text-muted">{t("booking.title")}</div>
               <div className="font-display text-lg font-bold leading-tight">{venue.name}</div>
             </div>
             <button
               onClick={onClose}
               className="grid h-9 w-9 place-items-center rounded-full bg-cream text-muted transition hover:bg-sand"
-              aria-label="Закрыть"
+              aria-label={t("booking.close")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -105,11 +111,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
               <div className="flex gap-1.5 px-5 pt-4">
                 {STEPS.map((label, i) => (
                   <div key={label} className="flex-1">
-                    <div
-                      className={`h-1.5 rounded-full transition ${
-                        i <= step ? "bg-clay" : "bg-sand"
-                      }`}
-                    />
+                    <div className={`h-1.5 rounded-full transition ${i <= step ? "bg-clay" : "bg-sand"}`} />
                     <div
                       className={`mt-1.5 text-center text-[11px] font-medium ${
                         i === step ? "text-clay" : "text-muted"
@@ -125,7 +127,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
               <div className="flex-1 overflow-y-auto px-5 py-5">
                 {step === 0 && (
                   <div className="space-y-3">
-                    <p className="text-sm text-muted">Выберите посадку для вашей компании</p>
+                    <p className="text-sm text-muted">{t("booking.pickRoom")}</p>
                     {venue.rooms.map((r) => (
                       <button
                         key={r.id}
@@ -139,13 +141,13 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                             : "border-sand hover:border-sand-dark"
                         }`}
                       >
-                        <div>
+                        <div className="min-w-0 pr-2">
                           <div className="font-semibold">{r.name}</div>
                           <div className="text-sm text-muted">
-                            {ROOM_TYPES[r.type].label} · {ROOM_TYPES[r.type].hint}
+                            {t(`enums.roomTypes.${r.type}.label`)} · {t(`enums.roomTypes.${r.type}.hint`)}
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 rounded-full bg-cream px-3 py-1.5 text-sm font-semibold">
+                        <div className="flex shrink-0 items-center gap-1 rounded-full bg-cream px-3 py-1.5 text-sm font-semibold">
                           <Users className="h-4 w-4 text-clay" />
                           {r.seats}
                         </div>
@@ -157,7 +159,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                 {step === 1 && (
                   <div className="space-y-5">
                     <div>
-                      <label className="text-sm font-semibold">Дата</label>
+                      <label className="text-sm font-semibold">{t("booking.date")}</label>
                       <input
                         type="date"
                         value={date}
@@ -166,34 +168,29 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-semibold">Время</label>
+                      <label className="text-sm font-semibold">{t("booking.time")}</label>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {TIME_SLOTS.map((t) => (
+                        {TIME_SLOTS.map((tslot) => (
                           <button
-                            key={t}
-                            onClick={() => setTime(t)}
+                            key={tslot}
+                            onClick={() => setTime(tslot)}
                             className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
-                              time === t
+                              time === tslot
                                 ? "border-clay bg-clay text-white"
                                 : "border-sand bg-surface hover:border-sand-dark"
                             }`}
                           >
-                            {t}
+                            {tslot}
                           </button>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold">Гостей</label>
+                      <label className="text-sm font-semibold">{t("booking.guests")}</label>
                       <div className="mt-2 flex items-center gap-4">
-                        <Stepper
-                          value={guests}
-                          min={2}
-                          max={room?.seats ?? 50}
-                          onChange={setGuests}
-                        />
+                        <Stepper value={guests} min={2} max={room?.seats ?? 50} onChange={setGuests} />
                         <span className="text-sm text-muted">
-                          мест в «{room?.name}»: {room?.seats}
+                          {t("booking.seatsIn", { room: room?.name ?? "", n: room?.seats ?? 0 })}
                         </span>
                       </div>
                     </div>
@@ -202,17 +199,12 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
 
                 {step === 2 && (
                   <div className="space-y-3">
-                    <p className="text-sm text-muted">
-                      Закажите основное блюдо заранее — повар начнёт готовить к приходу
-                    </p>
+                    <p className="text-sm text-muted">{t("booking.preorderHint")}</p>
                     {mains.map((m) => (
-                      <div
-                        key={m.name}
-                        className="flex items-center justify-between rounded-2xl border border-sand p-3"
-                      >
+                      <div key={m.name} className="flex items-center justify-between rounded-2xl border border-sand p-3">
                         <div className="pr-2">
                           <div className="font-medium leading-tight">{m.name}</div>
-                          <div className="text-sm text-muted">{formatSom(m.price)}</div>
+                          <div className="text-sm text-muted">{money(m.price)}</div>
                         </div>
                         {dishQtys[m.name] ? (
                           <Stepper
@@ -227,27 +219,25 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                             onClick={() => setQty(m.name, 1)}
                             className="rounded-full border border-clay px-3.5 py-1.5 text-sm font-semibold text-clay transition hover:bg-clay/5"
                           >
-                            Добавить
+                            {t("booking.add")}
                           </button>
                         )}
                       </div>
                     ))}
-                    <p className="pt-1 text-center text-xs text-muted">
-                      Салаты, чай и закуски можно добавить на месте
-                    </p>
+                    <p className="pt-1 text-center text-xs text-muted">{t("booking.extrasHint")}</p>
                   </div>
                 )}
 
                 {step === 3 && (
                   <div className="space-y-4">
                     <div className="rounded-2xl border border-sand bg-cream p-4">
-                      <Row label={`Ожидаемый чек · ${guests} ${plural(guests, ["гость", "гостя", "гостей"])}`} value={formatSom(summary.estTotal)} muted />
-                      <Row label={`Задаток (${venue.depositPercent}%)`} value={formatSom(summary.deposit)} />
-                      <Row label="Сервис Davra (3%)" value={formatSom(summary.serviceFee)} muted />
+                      <Row label={`${t("booking.estCheck")} · ${guests} ${t("booking.guestsWord")}`} value={money(summary.estTotal)} muted />
+                      <Row label={t("booking.deposit", { pct: venue.depositPercent })} value={money(summary.deposit)} />
+                      <Row label={t("booking.serviceFee")} value={money(summary.serviceFee)} muted />
                       <div className="my-2 border-t border-sand" />
-                      <Row label="К оплате сейчас" value={formatSom(summary.payNow)} bold />
+                      <Row label={t("booking.payNow")} value={money(summary.payNow)} bold />
                       <p className="mt-1 text-xs text-muted">
-                        Остаток ({formatSom(summary.estTotal - summary.deposit)}) оплачивается в чайхане
+                        {t("booking.remainder", { sum: money(summary.estTotal - summary.deposit) })}
                       </p>
                     </div>
 
@@ -268,29 +258,21 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                         <Split className="h-5 w-5" />
                       </span>
                       <span className="flex-1">
-                        <span className="block font-semibold">Собрать кассу гапа</span>
+                        <span className="block font-semibold">{t("booking.kassaTitle")}</span>
                         <span className="block text-sm text-muted">
                           {splitKassa
-                            ? `По ${formatSom(summary.perPerson)} с каждого — отправим ссылку на оплату`
-                            : "Разделить задаток поровну между друзьями"}
+                            ? t("booking.kassaOn", { sum: money(summary.perPerson) })
+                            : t("booking.kassaOff")}
                         </span>
                       </span>
-                      <span
-                        className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition ${
-                          splitKassa ? "bg-teal" : "bg-sand"
-                        }`}
-                      >
-                        <span
-                          className={`block h-5 w-5 rounded-full bg-white shadow transition ${
-                            splitKassa ? "translate-x-5" : ""
-                          }`}
-                        />
+                      <span className={`h-6 w-11 shrink-0 rounded-full p-0.5 transition ${splitKassa ? "bg-teal" : "bg-sand"}`}>
+                        <span className={`block h-5 w-5 rounded-full bg-white shadow transition ${splitKassa ? "translate-x-5" : ""}`} />
                       </span>
                     </button>
 
                     <div className="flex items-center justify-center gap-2 text-xs text-muted">
                       <ShieldCheck className="h-4 w-4 text-leaf" />
-                      Оплата защищена · возврат при отмене за 24 часа
+                      {t("booking.secure")}
                     </div>
                   </div>
                 )}
@@ -308,7 +290,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                       setStep((s) => s - 1);
                     }}
                     className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-sand text-muted transition hover:bg-cream"
-                    aria-label="Назад"
+                    aria-label={t("booking.back")}
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
@@ -324,7 +306,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                     disabled={!canNext}
                     className="flex flex-1 items-center justify-center gap-2 rounded-full bg-clay py-3.5 font-semibold text-white transition hover:bg-clay-dark disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    Далее
+                    {t("booking.next")}
                     <ChevronRight className="h-5 w-5" />
                   </button>
                 ) : (
@@ -336,7 +318,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                     className="flex flex-1 items-center justify-center gap-2 rounded-full bg-clay py-3.5 font-semibold text-white transition hover:bg-clay-dark"
                   >
                     <Wallet className="h-5 w-5" />
-                    Оплатить {formatSom(summary.payNow)} через CLICK
+                    {t("booking.payViaClick", { sum: money(summary.payNow) })}
                   </button>
                 )}
               </div>
@@ -365,17 +347,15 @@ function Stepper({
     <div className="inline-flex items-center gap-1 rounded-full border border-sand bg-surface p-1">
       <button
         onClick={() => onChange(Math.max(min, value - 1))}
-        className="grid h-8 w-8 place-items-center rounded-full text-ink transition hover:bg-cream disabled:opacity-30"
+        className="grid h-9 w-9 place-items-center rounded-full text-ink transition hover:bg-cream disabled:opacity-30"
         disabled={value <= min}
       >
         <Minus className="h-4 w-4" />
       </button>
-      <span className={`text-center font-bold tabular-nums ${compact ? "w-6" : "w-8 text-lg"}`}>
-        {value}
-      </span>
+      <span className={`text-center font-bold tabular-nums ${compact ? "w-6" : "w-8 text-lg"}`}>{value}</span>
       <button
         onClick={() => onChange(Math.min(max, value + 1))}
-        className="grid h-8 w-8 place-items-center rounded-full text-ink transition hover:bg-cream disabled:opacity-30"
+        className="grid h-9 w-9 place-items-center rounded-full text-ink transition hover:bg-cream disabled:opacity-30"
         disabled={value >= max}
       >
         <Plus className="h-4 w-4" />
@@ -416,22 +396,21 @@ function Success({
   time: string;
   onClose: () => void;
 }) {
+  const { t } = useT();
   return (
     <div className="flex flex-col items-center px-6 py-10 text-center">
       <div className="grid h-16 w-16 place-items-center rounded-full bg-leaf/15 text-leaf">
         <Check className="h-9 w-9" />
       </div>
-      <h3 className="mt-4 font-display text-2xl font-bold">Бронь отправлена!</h3>
-      <p className="mt-2 max-w-xs text-sm text-muted">
-        Задаток оплачен через CLICK. «{venue.name}» получит уведомление и подтвердит бронь.
-      </p>
+      <h3 className="mt-4 font-display text-2xl font-bold">{t("booking.successTitle")}</h3>
+      <p className="mt-2 max-w-xs text-sm text-muted">{t("booking.successText", { venue: venue.name })}</p>
       <div className="mt-5 w-full rounded-2xl border border-sand bg-cream p-4 text-left text-sm">
         <div className="flex justify-between py-0.5">
-          <span className="text-muted">Кабинка</span>
+          <span className="text-muted">{t("booking.sCabin")}</span>
           <span className="font-semibold">{room}</span>
         </div>
         <div className="flex justify-between py-0.5">
-          <span className="text-muted">Когда</span>
+          <span className="text-muted">{t("booking.sWhen")}</span>
           <span className="font-semibold">
             {date || "—"} · {time}
           </span>
@@ -439,13 +418,13 @@ function Success({
       </div>
       <div className="mt-4 flex items-center gap-2 text-xs text-muted">
         <Bell className="h-4 w-4 text-clay" />
-        Напоминание придёт в Telegram за день до встречи
+        {t("booking.reminder")}
       </div>
       <button
         onClick={onClose}
         className="mt-6 w-full rounded-full bg-ink py-3.5 font-semibold text-white transition hover:opacity-90"
       >
-        Готово
+        {t("booking.done")}
       </button>
     </div>
   );

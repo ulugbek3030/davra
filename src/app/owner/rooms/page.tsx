@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Plus, Trash2, Users, Minus } from "lucide-react";
 import { MY_VENUE } from "@/lib/ownerData";
 import { ROOM_TYPES, type RoomType, type Room } from "@/lib/venues";
+import { useT } from "@/i18n/LocaleProvider";
 
 export default function RoomsPage() {
+  const { t } = useT();
   const [rooms, setRooms] = useState<Room[]>(MY_VENUE.rooms);
   const [name, setName] = useState("");
   const [type, setType] = useState<RoomType>("kabinka");
@@ -26,33 +28,33 @@ export default function RoomsPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Кабинки и залы</h1>
-      <p className="mt-1 text-muted">Посадка, которую можно забронировать у вас.</p>
+      <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("owner.rooms.title")}</h1>
+      <p className="mt-1 text-muted">{t("owner.rooms.subtitle")}</p>
 
       {/* Add form */}
       <div className="mt-6 rounded-3xl border border-sand bg-surface p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <label className="w-full sm:min-w-[180px] sm:flex-1">
-            <span className="mb-1.5 block text-sm font-medium text-ink/80">Название</span>
+            <span className="mb-1.5 block text-sm font-medium text-ink/80">{t("owner.rooms.name")}</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Кабинка «Лола»"
+              placeholder={t("owner.rooms.namePlaceholder")}
               className={inputCls}
             />
           </label>
           <label className="w-full sm:w-44">
-            <span className="mb-1.5 block text-sm font-medium text-ink/80">Тип</span>
+            <span className="mb-1.5 block text-sm font-medium text-ink/80">{t("owner.rooms.type")}</span>
             <select value={type} onChange={(e) => setType(e.target.value as RoomType)} className={inputCls}>
-              {(Object.keys(ROOM_TYPES) as RoomType[]).map((t) => (
-                <option key={t} value={t}>
-                  {ROOM_TYPES[t].label}
+              {(Object.keys(ROOM_TYPES) as RoomType[]).map((rt) => (
+                <option key={rt} value={rt}>
+                  {t(`enums.roomTypes.${rt}.label`)}
                 </option>
               ))}
             </select>
           </label>
           <div>
-            <span className="mb-1.5 block text-sm font-medium text-ink/80">Мест</span>
+            <span className="mb-1.5 block text-sm font-medium text-ink/80">{t("owner.rooms.seats")}</span>
             <div className="inline-flex items-center gap-1 rounded-xl border border-sand bg-cream p-1">
               <button onClick={() => setSeats((s) => Math.max(2, s - 2))} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-surface">
                 <Minus className="h-4 w-4" />
@@ -69,7 +71,7 @@ export default function RoomsPage() {
             className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-clay-dark sm:w-auto"
           >
             <Plus className="h-4 w-4" />
-            Добавить
+            {t("owner.rooms.add")}
           </button>
         </div>
       </div>
@@ -81,7 +83,7 @@ export default function RoomsPage() {
             <div>
               <div className="font-semibold">{r.name}</div>
               <div className="text-sm text-muted">
-                {ROOM_TYPES[r.type].label} · {ROOM_TYPES[r.type].hint}
+                {t(`enums.roomTypes.${r.type}.label`)} · {t(`enums.roomTypes.${r.type}.hint`)}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -92,7 +94,7 @@ export default function RoomsPage() {
               <button
                 onClick={() => remove(r.id)}
                 className="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-clay/10 hover:text-clay"
-                aria-label="Удалить"
+                aria-label={t("owner.rooms.delete")}
               >
                 <Trash2 className="h-4 w-4" />
               </button>

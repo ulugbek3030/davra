@@ -1,6 +1,8 @@
+"use client";
+
 import { Wallet, Crown, Megaphone, Coins } from "lucide-react";
 import { REVENUE_SOURCES, PLATFORM, PAYOUTS, PLATFORM_BOOKINGS } from "@/lib/adminData";
-import { formatSom, formatSomShort } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 
 const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   commission: Wallet,
@@ -16,23 +18,24 @@ const TONE_CLS: Record<string, string> = {
 };
 
 export default function FinancePage() {
+  const { t, money, moneyShort } = useT();
   const total = PLATFORM.revenue30d;
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Финансы</h1>
-      <p className="mt-1 text-muted">Выручка, источники и выплаты заведениям за 30 дней.</p>
+      <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("admin.finance.title")}</h1>
+      <p className="mt-1 text-muted">{t("admin.finance.subtitle")}</p>
 
       {/* Total */}
       <div
         className="mt-6 overflow-hidden rounded-3xl p-6 text-white"
         style={{ backgroundImage: "linear-gradient(135deg,#0F4250,#17596B)" }}
       >
-        <div className="text-sm text-white/70">Наша выручка за 30 дней</div>
-        <div className="mt-1 font-display text-4xl font-bold">{formatSom(total)}</div>
+        <div className="text-sm text-white/70">{t("admin.finance.revenue30dLabel")}</div>
+        <div className="mt-1 font-display text-4xl font-bold">{money(total)}</div>
         <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-white/80">
-          <span>Оборот (GMV): {formatSomShort(PLATFORM.gmv30d)}</span>
-          <span>Take-rate: {PLATFORM.takeRate}%</span>
+          <span>{t("admin.finance.gmvLabel")}: {moneyShort(PLATFORM.gmv30d)}</span>
+          <span>{t("admin.finance.takeRateLabel")}: {PLATFORM.takeRate}%</span>
         </div>
       </div>
 
@@ -46,9 +49,9 @@ export default function FinancePage() {
               <span className={`grid h-10 w-10 place-items-center rounded-xl ${TONE_CLS[s.tone]}`}>
                 <Icon className="h-5 w-5" />
               </span>
-              <div className="mt-3 font-display text-xl font-bold leading-none">{formatSomShort(s.amount)}</div>
-              <div className="mt-1 text-sm font-medium">{s.label}</div>
-              <div className="text-xs text-muted">{s.hint} · {share}%</div>
+              <div className="mt-3 font-display text-xl font-bold leading-none">{moneyShort(s.amount)}</div>
+              <div className="mt-1 text-sm font-medium">{t(`admin.revenueSource.${s.key}.label`)}</div>
+              <div className="text-xs text-muted">{t(`admin.revenueSource.${s.key}.hint`)} · {share}%</div>
             </div>
           );
         })}
@@ -57,34 +60,37 @@ export default function FinancePage() {
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {/* Payouts */}
         <div className="rounded-3xl border border-sand bg-surface p-5">
-          <h2 className="font-display text-lg font-bold">Выплаты заведениям</h2>
-          <p className="text-sm text-muted">Задаток за вычетом комиссии — через CLICK</p>
+          <h2 className="font-display text-lg font-bold">{t("admin.finance.payouts.title")}</h2>
+          <p className="text-sm text-muted">{t("admin.finance.payouts.subtitle")}</p>
           <div className="mt-3 divide-y divide-sand">
-            {PAYOUTS.map((p) => (
+            {PAYOUTS.map((p) => {
+              const paid = p.status === "Выплачено";
+              return (
               <div key={p.venue + p.date} className="flex items-center justify-between py-3">
                 <div>
                   <div className="font-semibold">{p.venue}</div>
                   <div className="text-sm text-muted">{p.date}</div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-semibold tabular-nums">{formatSom(p.amount)}</span>
+                  <span className="font-semibold tabular-nums">{money(p.amount)}</span>
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                      p.status === "Выплачено" ? "bg-leaf/15 text-leaf" : "bg-saffron/20 text-[#9a6b12]"
+                      paid ? "bg-leaf/15 text-leaf" : "bg-saffron/20 text-[#9a6b12]"
                     }`}
                   >
-                    {p.status}
+                    {t(paid ? "admin.finance.payoutStatus.paid" : "admin.finance.payoutStatus.processing")}
                   </span>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* Commission transactions */}
         <div className="rounded-3xl border border-sand bg-surface p-5">
-          <h2 className="font-display text-lg font-bold">Последние комиссии</h2>
-          <p className="text-sm text-muted">3% с задатка по каждой брони</p>
+          <h2 className="font-display text-lg font-bold">{t("admin.finance.commissions.title")}</h2>
+          <p className="text-sm text-muted">{t("admin.finance.commissions.subtitle")}</p>
           <div className="mt-3 divide-y divide-sand">
             {PLATFORM_BOOKINGS.map((b) => (
               <div key={b.id} className="flex items-center justify-between py-3">
@@ -93,8 +99,8 @@ export default function FinancePage() {
                   <div className="text-sm text-muted">{b.group} · {b.date}</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold tabular-nums text-leaf">+{formatSom(b.commission)}</div>
-                  <div className="text-xs text-muted">из {formatSomShort(b.gmv)}</div>
+                  <div className="font-semibold tabular-nums text-leaf">+{money(b.commission)}</div>
+                  <div className="text-xs text-muted">{t("admin.finance.commissions.from", { gmv: moneyShort(b.gmv) })}</div>
                 </div>
               </div>
             ))}

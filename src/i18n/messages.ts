@@ -1,4 +1,8 @@
 // ===== Davra i18n — uz (lotin, default) · uz-cyrl · ru =====
+import { guestDict } from "./guest";
+import { ownerDict } from "./owner";
+import { adminDict } from "./admin";
+
 export const LOCALES = ["uz", "uz-cyrl", "ru"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "uz";
@@ -124,6 +128,20 @@ const uz: Dict = {
       terrace: "Yozgi terrasa",
       kids: "Bolalar zonasi",
     },
+    roomTypes: {
+      kabinka: { label: "Kabinka", hint: "Alohida xona" },
+      ayvon: { label: "Ayvon", hint: "Yozgi terrasa" },
+      tapchan: { label: "Tapchan", hint: "Ko‘rpachali so‘ri" },
+      zal: { label: "Banket zali", hint: "Katta kompaniyalar uchun" },
+    },
+    priceLabels: {
+      "1": "80 000 so‘mgacha / kishi",
+      "2": "80–150 000 so‘m / kishi",
+      "3": "150 000 so‘mdan / kishi",
+    },
+    bookingStatus: { new: "Yangi", confirmed: "Tasdiqlangan", declined: "Rad etilgan", completed: "Yakunlangan" },
+    venueStatus: { active: "Faol", pending: "Moderatsiyada", paused: "Pauzada" },
+    planTier: { free: "Start", pro: "Pro", premium: "Premium" },
   },
 };
 
@@ -239,6 +257,20 @@ const uzc: Dict = {
       terrace: "Ёзги терраса",
       kids: "Болалар зонаси",
     },
+    roomTypes: {
+      kabinka: { label: "Кабинка", hint: "Алоҳида хона" },
+      ayvon: { label: "Айвон", hint: "Ёзги терраса" },
+      tapchan: { label: "Тапчан", hint: "Кўрпачали сўри" },
+      zal: { label: "Банкет зали", hint: "Катта компаниялар учун" },
+    },
+    priceLabels: {
+      "1": "80 000 сўмгача / киши",
+      "2": "80–150 000 сўм / киши",
+      "3": "150 000 сўмдан / киши",
+    },
+    bookingStatus: { new: "Янги", confirmed: "Тасдиқланган", declined: "Рад этилган", completed: "Якунланган" },
+    venueStatus: { active: "Фаол", pending: "Модерацияда", paused: "Паузада" },
+    planTier: { free: "Старт", pro: "Pro", premium: "Premium" },
   },
 };
 
@@ -354,7 +386,25 @@ const ru: Dict = {
       terrace: "Летняя веранда",
       kids: "Детская зона",
     },
+    roomTypes: {
+      kabinka: { label: "Кабинка", hint: "Изолированная комната" },
+      ayvon: { label: "Айван", hint: "Летняя терраса" },
+      tapchan: { label: "Тапчан", hint: "Топчан с курпачой" },
+      zal: { label: "Банкетный зал", hint: "Для больших компаний" },
+    },
+    priceLabels: {
+      "1": "до 80 000 сум / чел",
+      "2": "80–150 000 сум / чел",
+      "3": "от 150 000 сум / чел",
+    },
+    bookingStatus: { new: "Новая", confirmed: "Подтверждена", declined: "Отклонена", completed: "Завершена" },
+    venueStatus: { active: "Активно", pending: "На модерации", paused: "На паузе" },
+    planTier: { free: "Старт", pro: "Pro", premium: "Premium" },
   },
 };
 
-export const messages: Record<Locale, Dict> = { uz, "uz-cyrl": uzc, ru };
+export const messages: Record<Locale, Dict> = {
+  uz: { ...uz, ...guestDict.uz, ...ownerDict.uz, ...adminDict.uz },
+  "uz-cyrl": { ...uzc, ...guestDict["uz-cyrl"], ...ownerDict["uz-cyrl"], ...adminDict["uz-cyrl"] },
+  ru: { ...ru, ...guestDict.ru, ...ownerDict.ru, ...adminDict.ru },
+};

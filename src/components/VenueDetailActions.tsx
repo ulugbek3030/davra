@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import type { Venue } from "@/lib/venues";
-import { formatSomShort } from "@/lib/utils";
 import { Star } from "lucide-react";
+import { useT } from "@/i18n/LocaleProvider";
 import { BookingSheet } from "./BookingSheet";
 
 export function VenueDetailActions({ venue }: { venue: Venue }) {
+  const { t, moneyShort } = useT();
   const [open, setOpen] = useState(false);
 
   return (
@@ -19,20 +20,21 @@ export function VenueDetailActions({ venue }: { venue: Venue }) {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold">
-                от {formatSomShort(venue.avgCheckPerGuest)}
+                {t("venue.priceFrom")}
+                {moneyShort(venue.avgCheckPerGuest)}
               </span>
-              <span className="text-sm text-muted">/ чел</span>
+              <span className="text-sm text-muted">{t("common.perGuest")}</span>
             </div>
             <div className="flex items-center gap-1 text-sm text-muted">
               <Star className="h-3.5 w-3.5 fill-saffron text-saffron" />
-              {venue.rating.toFixed(1)} · {venue.reviewsCount} отзывов
+              {venue.rating.toFixed(1)} · {venue.reviewsCount} {t("venue.reviewsWord")}
             </div>
           </div>
           <button
             onClick={() => setOpen(true)}
             className="rounded-full bg-clay px-7 py-3.5 text-base font-semibold text-white shadow-lift transition hover:bg-clay-dark"
           >
-            Забронировать
+            {t("card.book")}
           </button>
         </div>
       </div>

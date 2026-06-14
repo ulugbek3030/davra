@@ -6,17 +6,15 @@ import {
   ADMIN_VENUES,
   type AdminVenueRow,
   type VenueStatus,
-  STATUS_LABEL,
-  PLAN_LABEL,
 } from "@/lib/adminData";
-import { formatSomShort } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 
 type Tab = "all" | "pending" | "active" | "paused";
-const TABS: { id: Tab; label: string }[] = [
-  { id: "all", label: "Все" },
-  { id: "pending", label: "На модерации" },
-  { id: "active", label: "Активные" },
-  { id: "paused", label: "На паузе" },
+const TABS: { id: Tab; labelKey: string }[] = [
+  { id: "all", labelKey: "admin.venues.tabs.all" },
+  { id: "pending", labelKey: "admin.venues.tabs.pending" },
+  { id: "active", labelKey: "admin.venues.tabs.active" },
+  { id: "paused", labelKey: "admin.venues.tabs.paused" },
 ];
 
 const STATUS_CLS: Record<VenueStatus, string> = {
@@ -26,6 +24,7 @@ const STATUS_CLS: Record<VenueStatus, string> = {
 };
 
 export default function AdminVenuesPage() {
+  const { t, moneyShort } = useT();
   const [venues, setVenues] = useState<AdminVenueRow[]>(ADMIN_VENUES);
   const [tab, setTab] = useState<Tab>("all");
 
@@ -38,21 +37,21 @@ export default function AdminVenuesPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Заведения</h1>
-      <p className="mt-1 text-muted">Модерация заявок и управление заведениями платформы.</p>
+      <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("admin.venues.title")}</h1>
+      <p className="mt-1 text-muted">{t("admin.venues.subtitle")}</p>
 
       <div className="mt-5 flex gap-1.5 overflow-x-auto no-scrollbar">
-        {TABS.map((t) => (
+        {TABS.map((tabItem) => (
           <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
+            key={tabItem.id}
+            onClick={() => setTab(tabItem.id)}
             className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
-              tab === t.id ? "bg-ink text-white" : "border border-sand bg-surface text-ink/70 hover:bg-cream"
+              tab === tabItem.id ? "bg-ink text-white" : "border border-sand bg-surface text-ink/70 hover:bg-cream"
             }`}
           >
-            {t.label}
-            {t.id === "pending" && pending > 0 && (
-              <span className={`rounded-full px-1.5 text-xs font-bold ${tab === t.id ? "bg-white/25" : "bg-saffron text-ink"}`}>
+            {t(tabItem.labelKey)}
+            {tabItem.id === "pending" && pending > 0 && (
+              <span className={`rounded-full px-1.5 text-xs font-bold ${tab === tabItem.id ? "bg-white/25" : "bg-saffron text-ink"}`}>
                 {pending}
               </span>
             )}
@@ -70,27 +69,27 @@ export default function AdminVenuesPage() {
               <div className="flex items-center gap-2">
                 <span className="font-display text-lg font-bold">{v.name}</span>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_CLS[v.status]}`}>
-                  {STATUS_LABEL[v.status]}
+                  {t(`enums.venueStatus.${v.status}`)}
                 </span>
               </div>
               <div className="mt-0.5 flex items-center gap-1 text-sm text-muted">
                 <MapPin className="h-3.5 w-3.5 text-clay" />
-                {v.district}
+                {t(`enums.districts.${v.district}`)}
                 <span className="text-sand-dark">·</span>
-                <span className="rounded bg-cream px-1.5 py-0.5 text-xs font-semibold">{PLAN_LABEL[v.plan]}</span>
+                <span className="rounded bg-cream px-1.5 py-0.5 text-xs font-semibold">{t(`enums.planTier.${v.plan}`)}</span>
               </div>
             </div>
 
             {v.status !== "pending" && (
               <>
-                <Stat label="Рейтинг" value={
+                <Stat label={t("admin.venues.stat.rating")} value={
                   <span className="inline-flex items-center gap-1">
                     <Star className="h-3.5 w-3.5 fill-saffron text-saffron" />
                     {v.rating.toFixed(1)}
                   </span>
                 } />
-                <Stat label="Брони/мес" value={v.bookings30d} />
-                <Stat label="Выручка" value={formatSomShort(v.revenue30d)} />
+                <Stat label={t("admin.venues.stat.bookingsMonth")} value={v.bookings30d} />
+                <Stat label={t("admin.venues.stat.revenue")} value={moneyShort(v.revenue30d)} />
               </>
             )}
 
@@ -102,11 +101,11 @@ export default function AdminVenuesPage() {
                     className="inline-flex items-center gap-1.5 rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
                   >
                     <Check className="h-4 w-4" />
-                    Одобрить
+                    {t("admin.venues.actions.approve")}
                   </button>
                   <button
                     onClick={() => reject(v.id)}
-                    aria-label="Отклонить"
+                    aria-label={t("admin.venues.actions.reject")}
                     className="inline-flex items-center gap-1.5 rounded-full border border-sand px-3 py-2 text-sm font-semibold text-muted transition hover:bg-cream"
                   >
                     <X className="h-4 w-4" />
@@ -119,7 +118,7 @@ export default function AdminVenuesPage() {
                   className="inline-flex items-center gap-1.5 rounded-full border border-sand px-4 py-2 text-sm font-semibold text-muted transition hover:bg-cream"
                 >
                   <Pause className="h-4 w-4" />
-                  На паузу
+                  {t("admin.venues.actions.pause")}
                 </button>
               )}
               {v.status === "paused" && (
@@ -128,7 +127,7 @@ export default function AdminVenuesPage() {
                   className="inline-flex items-center gap-1.5 rounded-full bg-clay px-4 py-2 text-sm font-semibold text-white transition hover:bg-clay-dark"
                 >
                   <Play className="h-4 w-4" />
-                  Активировать
+                  {t("admin.venues.actions.activate")}
                 </button>
               )}
             </div>

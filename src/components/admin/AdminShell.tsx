@@ -14,12 +14,13 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { ADMIN_VENUES } from "@/lib/adminData";
+import { useT } from "@/i18n/LocaleProvider";
 
 const NAV = [
-  { href: "/admin", label: "Обзор", icon: LayoutDashboard },
-  { href: "/admin/venues", label: "Заведения", icon: Store },
-  { href: "/admin/bookings", label: "Брони", icon: CalendarCheck },
-  { href: "/admin/finance", label: "Финансы", icon: Wallet },
+  { href: "/admin", labelKey: "admin.nav.overview", icon: LayoutDashboard },
+  { href: "/admin/venues", labelKey: "admin.nav.venues", icon: Store },
+  { href: "/admin/bookings", labelKey: "admin.nav.bookings", icon: CalendarCheck },
+  { href: "/admin/finance", labelKey: "admin.nav.finance", icon: Wallet },
 ];
 
 function NavLinks({
@@ -31,6 +32,7 @@ function NavLinks({
   pending: number;
   onNavigate: () => void;
 }) {
+  const { t } = useT();
   return (
     <nav className="space-y-1">
       {NAV.map((item) => {
@@ -46,7 +48,7 @@ function NavLinks({
             }`}
           >
             <Icon className="h-[18px] w-[18px]" />
-            {item.label}
+            {t(item.labelKey)}
             {item.href === "/admin/venues" && pending > 0 && (
               <span className="ml-auto rounded-full bg-saffron px-1.5 py-0.5 text-xs font-bold text-ink">
                 {pending}
@@ -63,6 +65,7 @@ const sidebarStyle = { backgroundImage: "linear-gradient(180deg,#0F4250,#0a2f39)
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const pending = ADMIN_VENUES.filter((v) => v.status === "pending").length;
 
@@ -73,7 +76,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <Link href="/admin" className="flex items-center gap-2.5 px-1.5 py-2 text-white">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/15 text-sm font-bold">D</span>
           <span className="text-lg font-extrabold">
-            Davra <span className="rounded bg-saffron px-1.5 py-0.5 text-[10px] font-bold text-ink">ADMIN</span>
+            Davra <span className="rounded bg-saffron px-1.5 py-0.5 text-[10px] font-bold text-ink">{t("admin.brand.suffix")}</span>
           </span>
         </Link>
         <div className="mt-6 flex-1">
@@ -84,7 +87,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           className="flex items-center gap-2 rounded-xl border border-white/15 px-3.5 py-2.5 text-sm font-medium text-white/75 transition hover:bg-white/10"
         >
           <ArrowUpRight className="h-4 w-4" />
-          На сайт Davra
+          {t("admin.brand.toSite")}
         </Link>
       </aside>
 
@@ -94,8 +97,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <div className="absolute inset-0 bg-ink/50 animate-overlay-in" onClick={() => setOpen(false)} />
           <aside className="absolute inset-y-0 left-0 w-64 p-4 shadow-lift" style={sidebarStyle}>
             <div className="flex items-center justify-between px-1.5 py-2 text-white">
-              <span className="text-lg font-extrabold">Davra ADMIN</span>
-              <button onClick={() => setOpen(false)} className="text-white/70" aria-label="Закрыть меню">
+              <span className="text-lg font-extrabold">Davra {t("admin.brand.suffix")}</span>
+              <button onClick={() => setOpen(false)} className="text-white/70" aria-label={t("admin.a11y.closeMenu")}>
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -111,14 +114,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-sand bg-cream/85 px-4 backdrop-blur-md sm:px-6">
           <button
             onClick={() => setOpen(true)}
-            aria-label="Открыть меню"
+            aria-label={t("admin.a11y.openMenu")}
             className="grid h-9 w-9 place-items-center rounded-lg border border-sand bg-surface lg:hidden"
           >
             <MenuIcon className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2 font-semibold">
             <ShieldCheck className="h-5 w-5 text-teal" />
-            Админ-панель
+            {t("admin.brand.panel")}
           </div>
           <div className="ml-auto flex items-center gap-2">
             <span

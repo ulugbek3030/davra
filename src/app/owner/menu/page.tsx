@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import { MY_VENUE, } from "@/lib/ownerData";
+import { MY_VENUE } from "@/lib/ownerData";
 import type { MenuItem } from "@/lib/venues";
-import { formatSom } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 
 export default function MenuPage() {
+  const { t, money } = useT();
   const [items, setItems] = useState<MenuItem[]>(MY_VENUE.menu);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -25,27 +26,27 @@ export default function MenuPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Меню</h1>
-      <p className="mt-1 text-muted">Блюда, которые гость видит и может заказать заранее.</p>
+      <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("owner.menu.title")}</h1>
+      <p className="mt-1 text-muted">{t("owner.menu.subtitle")}</p>
 
       {/* Add form */}
       <div className="mt-6 rounded-3xl border border-sand bg-surface p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <label className="w-full sm:min-w-[180px] sm:flex-1">
-            <span className="mb-1.5 block text-sm font-medium text-ink/80">Название</span>
+            <span className="mb-1.5 block text-sm font-medium text-ink/80">{t("owner.menu.name")}</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Например, Лагман"
+              placeholder={t("owner.menu.namePlaceholder")}
               className={inputCls}
             />
           </label>
           <label className="w-full sm:w-36">
-            <span className="mb-1.5 block text-sm font-medium text-ink/80">Цена, сум</span>
+            <span className="mb-1.5 block text-sm font-medium text-ink/80">{t("owner.menu.price")}</span>
             <input
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="45000"
+              placeholder={t("owner.menu.pricePlaceholder")}
               inputMode="numeric"
               className={inputCls}
             />
@@ -57,7 +58,7 @@ export default function MenuPage() {
               isMain ? "border-clay bg-clay/5 text-clay" : "border-sand text-ink/70"
             }`}
           >
-            Основное
+            {t("owner.menu.main")}
           </button>
           <button
             type="button"
@@ -65,7 +66,7 @@ export default function MenuPage() {
             className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-clay-dark sm:w-auto"
           >
             <Plus className="h-4 w-4" />
-            Добавить
+            {t("owner.menu.add")}
           </button>
         </div>
       </div>
@@ -80,17 +81,17 @@ export default function MenuPage() {
             <span className="flex items-center gap-2">
               {m.isMain && (
                 <span className="rounded-full bg-clay/10 px-2 py-0.5 text-xs font-semibold text-clay">
-                  основное
+                  {t("owner.menu.mainBadge")}
                 </span>
               )}
               <span className={m.isMain ? "font-semibold" : ""}>{m.name}</span>
             </span>
             <div className="flex items-center gap-4">
-              <span className="font-semibold tabular-nums">{formatSom(m.price)}</span>
+              <span className="font-semibold tabular-nums">{money(m.price)}</span>
               <button
                 onClick={() => remove(i)}
                 className="grid h-8 w-8 place-items-center rounded-full text-muted transition hover:bg-clay/10 hover:text-clay"
-                aria-label="Удалить"
+                aria-label={t("owner.menu.delete")}
               >
                 <Trash2 className="h-4 w-4" />
               </button>

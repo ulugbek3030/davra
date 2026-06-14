@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { TrendingUp, Wallet, Store, CalendarCheck, ChevronRight, AlertCircle } from "lucide-react";
 import {
@@ -5,9 +7,8 @@ import {
   REVENUE_SOURCES,
   REVENUE_TREND,
   ADMIN_VENUES,
-  PLAN_LABEL,
 } from "@/lib/adminData";
-import { formatSom, formatSomShort } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 
 const TONE_HEX: Record<string, string> = {
   clay: "#BE4A2F",
@@ -17,6 +18,7 @@ const TONE_HEX: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
+  const { t, money, moneyShort } = useT();
   const total = PLATFORM.revenue30d;
   const maxTrend = Math.max(...REVENUE_TREND.map((t) => t.v));
   const topVenues = ADMIN_VENUES.filter((v) => v.status === "active")
@@ -25,8 +27,8 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Обзор платформы</h1>
-      <p className="mt-1 text-muted">Ключевые метрики Davra за последние 30 дней.</p>
+      <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("admin.dashboard.title")}</h1>
+      <p className="mt-1 text-muted">{t("admin.dashboard.subtitle")}</p>
 
       {PLATFORM.pending > 0 && (
         <Link
@@ -35,7 +37,7 @@ export default function AdminDashboard() {
         >
           <AlertCircle className="h-5 w-5 text-[#9a6b12]" />
           <span className="text-sm font-medium">
-            {PLATFORM.pending} заявки заведений ждут модерации
+            {t("admin.dashboard.moderationBanner", { n: PLATFORM.pending })}
           </span>
           <ChevronRight className="ml-auto h-4 w-4 text-muted" />
         </Link>
@@ -43,26 +45,26 @@ export default function AdminDashboard() {
 
       {/* KPI */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi icon={TrendingUp} tone="teal" label="Оборот (GMV)" value={formatSomShort(PLATFORM.gmv30d)} sub="броней за 30 дней" />
-        <Kpi icon={Wallet} tone="clay" label="Наша выручка" value={formatSomShort(total)} sub={`take-rate ${PLATFORM.takeRate}%`} />
-        <Kpi icon={Store} tone="leaf" label="Заведения" value={String(PLATFORM.activeVenues)} sub={`+${PLATFORM.pending} на модерации`} />
-        <Kpi icon={CalendarCheck} tone="saffron" label="Брони" value={String(PLATFORM.bookings30d)} sub="за 30 дней" />
+        <Kpi icon={TrendingUp} tone="teal" label={t("admin.dashboard.kpi.gmvLabel")} value={moneyShort(PLATFORM.gmv30d)} sub={t("admin.dashboard.kpi.gmvSub")} />
+        <Kpi icon={Wallet} tone="clay" label={t("admin.dashboard.kpi.revenueLabel")} value={moneyShort(total)} sub={t("admin.dashboard.kpi.revenueSub", { rate: PLATFORM.takeRate })} />
+        <Kpi icon={Store} tone="leaf" label={t("admin.dashboard.kpi.venuesLabel")} value={String(PLATFORM.activeVenues)} sub={t("admin.dashboard.kpi.venuesSub", { n: PLATFORM.pending })} />
+        <Kpi icon={CalendarCheck} tone="saffron" label={t("admin.dashboard.kpi.bookingsLabel")} value={String(PLATFORM.bookings30d)} sub={t("admin.dashboard.kpi.bookingsSub")} />
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {/* Revenue by source */}
         <div className="rounded-3xl border border-sand bg-surface p-5">
-          <h2 className="font-display text-lg font-bold">Выручка по источникам</h2>
-          <p className="text-sm text-muted">Слоёная монетизация · {formatSom(total)}</p>
+          <h2 className="font-display text-lg font-bold">{t("admin.dashboard.sources.title")}</h2>
+          <p className="text-sm text-muted">{t("admin.dashboard.sources.subtitle", { total: money(total) })}</p>
           <div className="mt-4 space-y-3.5">
             {REVENUE_SOURCES.map((s) => {
               const share = Math.round((s.amount / total) * 100);
               return (
                 <div key={s.key}>
                   <div className="mb-1 flex items-center justify-between text-sm">
-                    <span className="font-medium">{s.label}</span>
+                    <span className="font-medium">{t(`admin.revenueSource.${s.key}.label`)}</span>
                     <span className="tabular-nums text-muted">
-                      {formatSomShort(s.amount)} · {share}%
+                      {moneyShort(s.amount)} · {share}%
                     </span>
                   </div>
                   <div className="h-2.5 overflow-hidden rounded-full bg-cream">
@@ -80,13 +82,13 @@ export default function AdminDashboard() {
         {/* Revenue trend */}
         <div className="rounded-3xl border border-sand bg-surface p-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">Динамика выручки</h2>
+            <h2 className="font-display text-lg font-bold">{t("admin.dashboard.trend.title")}</h2>
             <span className="inline-flex items-center gap-1 text-sm font-semibold text-leaf">
               <TrendingUp className="h-4 w-4" />
-              +13% м/м
+              {t("admin.dashboard.trend.delta")}
             </span>
           </div>
-          <p className="text-sm text-muted">млн сум, 6 месяцев</p>
+          <p className="text-sm text-muted">{t("admin.dashboard.trend.subtitle")}</p>
           <div className="mt-5 flex h-40 items-stretch gap-2.5">
             {REVENUE_TREND.map((t, i) => (
               <div key={t.m} className="flex flex-1 flex-col items-center gap-1.5">
@@ -113,9 +115,9 @@ export default function AdminDashboard() {
       {/* Top venues */}
       <div className="mt-5 rounded-3xl border border-sand bg-surface p-5">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-bold">Топ заведений по выручке</h2>
+          <h2 className="font-display text-lg font-bold">{t("admin.dashboard.top.title")}</h2>
           <Link href="/admin/venues" className="inline-flex items-center gap-0.5 text-sm font-semibold text-clay hover:underline">
-            Все <ChevronRight className="h-4 w-4" />
+            {t("admin.dashboard.top.all")} <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="mt-3 divide-y divide-sand">
@@ -128,14 +130,14 @@ export default function AdminDashboard() {
                 <div className="flex items-center gap-2">
                   <span className="truncate font-semibold">{v.name}</span>
                   <span className="rounded-full bg-teal/10 px-2 py-0.5 text-xs font-semibold text-teal">
-                    {PLAN_LABEL[v.plan]}
+                    {t(`enums.planTier.${v.plan}`)}
                   </span>
                 </div>
-                <div className="text-sm text-muted">{v.district} · {v.bookings30d} броней</div>
+                <div className="text-sm text-muted">{t(`enums.districts.${v.district}`)} · {t("admin.dashboard.top.bookings", { n: v.bookings30d })}</div>
               </div>
               <div className="text-right">
-                <div className="text-sm font-bold tabular-nums">{formatSomShort(v.revenue30d)}</div>
-                <div className="text-xs text-muted">наша выручка</div>
+                <div className="text-sm font-bold tabular-nums">{moneyShort(v.revenue30d)}</div>
+                <div className="text-xs text-muted">{t("admin.dashboard.top.ourRevenue")}</div>
               </div>
             </div>
           ))}

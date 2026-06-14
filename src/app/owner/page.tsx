@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Bell,
@@ -9,10 +11,11 @@ import {
   Users,
 } from "lucide-react";
 import { BOOKINGS, WEEK_OCCUPANCY, MY_VENUE } from "@/lib/ownerData";
-import { formatSom, formatSomShort } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 import { StatusPill } from "@/components/owner/StatusPill";
 
 export default function OwnerDashboard() {
+  const { t, money, moneyShort } = useT();
   const newCount = BOOKINGS.filter((b) => b.status === "new").length;
   const confirmed = BOOKINGS.filter((b) => b.status === "confirmed").length;
   const earned = BOOKINGS.filter(
@@ -24,15 +27,15 @@ export default function OwnerDashboard() {
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold sm:text-3xl">Обзор</h1>
-          <p className="mt-1 text-muted">Добрый день! Вот что происходит в «{MY_VENUE.name}».</p>
+          <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("owner.dashboard.title")}</h1>
+          <p className="mt-1 text-muted">{t("owner.dashboard.greeting", { name: MY_VENUE.name })}</p>
         </div>
         <Link
           href="/owner/bookings"
           className="inline-flex items-center gap-1.5 rounded-full bg-clay px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-clay-dark"
         >
           <Bell className="h-4 w-4" />
-          {newCount} новых броней
+          {t("owner.dashboard.newBookingsCta", { n: newCount })}
         </Link>
       </div>
 
@@ -41,30 +44,30 @@ export default function OwnerDashboard() {
         <Kpi
           icon={Bell}
           tone="clay"
-          label="Новые брони"
+          label={t("owner.dashboard.kpi.newLabel")}
           value={String(newCount)}
-          sub="требуют ответа"
+          sub={t("owner.dashboard.kpi.newSub")}
         />
         <Kpi
           icon={CalendarCheck}
           tone="teal"
-          label="Подтверждено"
+          label={t("owner.dashboard.kpi.confirmedLabel")}
           value={String(confirmed)}
-          sub="на этой неделе"
+          sub={t("owner.dashboard.kpi.confirmedSub")}
         />
         <Kpi
           icon={Wallet}
           tone="leaf"
-          label="Задатки"
-          value={formatSomShort(earned)}
-          sub="за месяц, через CLICK"
+          label={t("owner.dashboard.kpi.depositsLabel")}
+          value={moneyShort(earned)}
+          sub={t("owner.dashboard.kpi.depositsSub")}
         />
         <Kpi
           icon={Star}
           tone="saffron"
-          label="Рейтинг"
+          label={t("owner.dashboard.kpi.ratingLabel")}
           value={MY_VENUE.rating.toFixed(1)}
-          sub={`${MY_VENUE.reviewsCount} отзывов`}
+          sub={t("owner.dashboard.kpi.ratingSub", { n: MY_VENUE.reviewsCount })}
         />
       </div>
 
@@ -72,13 +75,13 @@ export default function OwnerDashboard() {
         {/* Occupancy */}
         <div className="rounded-3xl border border-sand bg-surface p-5 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">Заполняемость</h2>
+            <h2 className="font-display text-lg font-bold">{t("owner.dashboard.occupancyTitle")}</h2>
             <span className="inline-flex items-center gap-1 text-sm font-semibold text-leaf">
               <TrendingUp className="h-4 w-4" />
               +14%
             </span>
           </div>
-          <p className="text-sm text-muted">по дням недели</p>
+          <p className="text-sm text-muted">{t("owner.dashboard.occupancySub")}</p>
           <div className="mt-5 flex h-36 items-stretch gap-2">
             {WEEK_OCCUPANCY.map((d) => (
               <div key={d.day} className="flex flex-1 flex-col items-center gap-1.5">
@@ -104,12 +107,12 @@ export default function OwnerDashboard() {
         {/* Recent bookings */}
         <div className="rounded-3xl border border-sand bg-surface p-5 lg:col-span-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">Последние брони</h2>
+            <h2 className="font-display text-lg font-bold">{t("owner.dashboard.recentTitle")}</h2>
             <Link
               href="/owner/bookings"
               className="inline-flex items-center gap-0.5 text-sm font-semibold text-clay hover:underline"
             >
-              Все <ChevronRight className="h-4 w-4" />
+              {t("owner.dashboard.all")} <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="mt-3 divide-y divide-sand">
@@ -130,8 +133,8 @@ export default function OwnerDashboard() {
                   </div>
                 </div>
                 <div className="shrink-0 text-right">
-                  <div className="text-sm font-bold tabular-nums">{formatSom(b.deposit)}</div>
-                  <div className="text-xs text-muted">задаток</div>
+                  <div className="text-sm font-bold tabular-nums">{money(b.deposit)}</div>
+                  <div className="text-xs text-muted">{t("owner.dashboard.deposit")}</div>
                 </div>
               </div>
             ))}

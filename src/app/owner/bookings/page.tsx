@@ -3,19 +3,15 @@
 import { useState } from "react";
 import { Check, X, Phone, Users, Clock, UtensilsCrossed, DoorOpen } from "lucide-react";
 import { BOOKINGS, type OwnerBooking, type BookingStatus } from "@/lib/ownerData";
-import { formatSom } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 import { StatusPill } from "@/components/owner/StatusPill";
 
 type Tab = "all" | "new" | "confirmed" | "completed";
-const TABS: { id: Tab; label: string }[] = [
-  { id: "all", label: "Все" },
-  { id: "new", label: "Новые" },
-  { id: "confirmed", label: "Подтверждённые" },
-  { id: "completed", label: "Завершённые" },
-];
+const TABS: Tab[] = ["all", "new", "confirmed", "completed"];
 const ORDER: Record<BookingStatus, number> = { new: 0, confirmed: 1, completed: 2, declined: 3 };
 
 export default function BookingsPage() {
+  const { t, money } = useT();
   const [bookings, setBookings] = useState<OwnerBooking[]>(BOOKINGS);
   const [tab, setTab] = useState<Tab>("all");
 
@@ -29,24 +25,24 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Брони</h1>
-      <p className="mt-1 text-muted">Подтверждайте заявки — гость получит уведомление в Telegram.</p>
+      <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("owner.bookings.title")}</h1>
+      <p className="mt-1 text-muted">{t("owner.bookings.subtitle")}</p>
 
       {/* Tabs */}
       <div className="mt-5 flex gap-1.5 overflow-x-auto no-scrollbar">
-        {TABS.map((t) => (
+        {TABS.map((id) => (
           <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
+            key={id}
+            onClick={() => setTab(id)}
             className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
-              tab === t.id ? "bg-ink text-white" : "border border-sand bg-surface text-ink/70 hover:bg-cream"
+              tab === id ? "bg-ink text-white" : "border border-sand bg-surface text-ink/70 hover:bg-cream"
             }`}
           >
-            {t.label}
-            {t.id === "new" && newCount > 0 && (
+            {t(`owner.bookings.tabs.${id}`)}
+            {id === "new" && newCount > 0 && (
               <span
                 className={`rounded-full px-1.5 text-xs font-bold ${
-                  tab === t.id ? "bg-white/25" : "bg-clay text-white"
+                  tab === id ? "bg-white/25" : "bg-clay text-white"
                 }`}
               >
                 {newCount}
@@ -60,7 +56,7 @@ export default function BookingsPage() {
       <div className="mt-5 space-y-4">
         {visible.length === 0 && (
           <div className="rounded-3xl border border-dashed border-sand-dark bg-surface py-14 text-center text-muted">
-            Здесь пока пусто
+            {t("owner.bookings.empty")}
           </div>
         )}
         {visible.map((b) => (
@@ -80,16 +76,16 @@ export default function BookingsPage() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-bold tabular-nums">{formatSom(b.deposit)}</div>
-                <div className="text-xs text-muted">задаток · из {formatSom(b.estTotal)}</div>
+                <div className="font-bold tabular-nums">{money(b.deposit)}</div>
+                <div className="text-xs text-muted">{t("owner.bookings.depositOf", { total: money(b.estTotal) })}</div>
               </div>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Field icon={Clock} label="Когда" value={`${b.date}, ${b.time}`} />
-              <Field icon={Users} label="Гостей" value={String(b.guests)} />
-              <Field icon={DoorOpen} label="Посадка" value={b.roomName} />
-              <Field icon={UtensilsCrossed} label="Предзаказ" value={b.mainDish} />
+              <Field icon={Clock} label={t("owner.bookings.fields.when")} value={`${b.date}, ${b.time}`} />
+              <Field icon={Users} label={t("owner.bookings.fields.guests")} value={String(b.guests)} />
+              <Field icon={DoorOpen} label={t("owner.bookings.fields.seating")} value={b.roomName} />
+              <Field icon={UtensilsCrossed} label={t("owner.bookings.fields.preorder")} value={b.mainDish} />
             </div>
 
             {b.status === "new" && (
@@ -99,14 +95,14 @@ export default function BookingsPage() {
                   className="flex flex-1 items-center justify-center gap-2 rounded-full bg-leaf py-2.5 font-semibold text-white transition hover:opacity-90"
                 >
                   <Check className="h-4 w-4" />
-                  Подтвердить
+                  {t("owner.bookings.confirm")}
                 </button>
                 <button
                   onClick={() => setStatus(b.id, "declined")}
                   className="flex items-center justify-center gap-2 rounded-full border border-sand px-5 py-2.5 font-semibold text-muted transition hover:bg-cream"
                 >
                   <X className="h-4 w-4" />
-                  Отклонить
+                  {t("owner.bookings.decline")}
                 </button>
               </div>
             )}

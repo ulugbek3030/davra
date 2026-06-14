@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { Check, ImagePlus, Save } from "lucide-react";
 import { MY_VENUE } from "@/lib/ownerData";
-import { DISTRICTS, AMENITY_LABELS, PRICE_LABELS, type Amenity, type CoverVariant } from "@/lib/venues";
+import { DISTRICTS, AMENITY_LABELS, type Amenity, type CoverVariant } from "@/lib/venues";
+import { useT } from "@/i18n/LocaleProvider";
 import { CoverArt } from "@/components/CoverArt";
 import { AMENITY_ICONS } from "@/components/icons";
 
 const PHOTOS: CoverVariant[] = ["clay", "teal", "saffron"];
 
 export default function VenueProfilePage() {
+  const { t } = useT();
   const [name, setName] = useState(MY_VENUE.name);
   const [tagline, setTagline] = useState(MY_VENUE.tagline);
   const [district, setDistrict] = useState<string>(MY_VENUE.district);
@@ -41,21 +43,21 @@ export default function VenueProfilePage() {
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold sm:text-3xl">Профиль заведения</h1>
-          <p className="mt-1 text-muted">Так вашу чайхану видят гости в каталоге.</p>
+          <h1 className="font-display text-2xl font-bold sm:text-3xl">{t("owner.venue.title")}</h1>
+          <p className="mt-1 text-muted">{t("owner.venue.subtitle")}</p>
         </div>
         <button
           type="submit"
           className="inline-flex items-center gap-2 rounded-full bg-clay px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-clay-dark"
         >
           {saved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-          {saved ? "Сохранено" : "Сохранить"}
+          {saved ? t("owner.venue.saved") : t("owner.venue.save")}
         </button>
       </div>
 
       {/* Photos */}
       <div className="mt-6 rounded-3xl border border-sand bg-surface p-5">
-        <div className="mb-3 font-semibold">Фотографии</div>
+        <div className="mb-3 font-semibold">{t("owner.venue.photos")}</div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {PHOTOS.map((v, i) => (
             <CoverArt key={v} variant={v} dish={MY_VENUE.signatureDishes[i % MY_VENUE.signatureDishes.length]} showBadge={false} className="h-28 w-full rounded-2xl" glyphClassName="text-4xl" />
@@ -65,7 +67,7 @@ export default function VenueProfilePage() {
             className="flex h-28 flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-sand-dark text-muted transition hover:border-clay hover:text-clay"
           >
             <ImagePlus className="h-6 w-6" />
-            <span className="text-xs font-medium">Добавить</span>
+            <span className="text-xs font-medium">{t("owner.venue.addPhoto")}</span>
           </button>
         </div>
       </div>
@@ -74,30 +76,30 @@ export default function VenueProfilePage() {
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <div className="rounded-3xl border border-sand bg-surface p-5">
           <div className="space-y-4">
-            <Field label="Название">
+            <Field label={t("owner.venue.fields.name")}>
               <input className={inputCls} value={name} onChange={(e) => { setName(e.target.value); touch(); }} />
             </Field>
-            <Field label="Слоган">
+            <Field label={t("owner.venue.fields.tagline")}>
               <input className={inputCls} value={tagline} onChange={(e) => { setTagline(e.target.value); touch(); }} />
             </Field>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Район">
+              <Field label={t("owner.venue.fields.district")}>
                 <select className={inputCls} value={district} onChange={(e) => { setDistrict(e.target.value); touch(); }}>
                   {DISTRICTS.map((d) => (
                     <option key={d} value={d}>
-                      {d}
+                      {t(`enums.districts.${d}`)}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field label="Часы работы">
+              <Field label={t("owner.venue.fields.hours")}>
                 <input className={inputCls} value={hours} onChange={(e) => { setHours(e.target.value); touch(); }} />
               </Field>
             </div>
-            <Field label="Адрес">
+            <Field label={t("owner.venue.fields.address")}>
               <input className={inputCls} value={address} onChange={(e) => { setAddress(e.target.value); touch(); }} />
             </Field>
-            <Field label="Телефон">
+            <Field label={t("owner.venue.fields.phone")}>
               <input className={inputCls} value={phone} onChange={(e) => { setPhone(e.target.value); touch(); }} />
             </Field>
           </div>
@@ -105,7 +107,7 @@ export default function VenueProfilePage() {
 
         <div className="rounded-3xl border border-sand bg-surface p-5">
           <div className="space-y-4">
-            <Field label="Описание">
+            <Field label={t("owner.venue.fields.description")}>
               <textarea
                 rows={5}
                 className={`${inputCls} resize-none`}
@@ -113,7 +115,7 @@ export default function VenueProfilePage() {
                 onChange={(e) => { setDescription(e.target.value); touch(); }}
               />
             </Field>
-            <Field label="Уровень цен">
+            <Field label={t("owner.venue.fields.priceLevel")}>
               <div className="flex gap-2">
                 {([1, 2, 3] as const).map((lvl) => (
                   <button
@@ -128,7 +130,7 @@ export default function VenueProfilePage() {
                   </button>
                 ))}
               </div>
-              <p className="mt-1.5 text-xs text-muted">{PRICE_LABELS[price]}</p>
+              <p className="mt-1.5 text-xs text-muted">{t(`enums.priceLabels.${price}`)}</p>
             </Field>
           </div>
         </div>
@@ -136,7 +138,7 @@ export default function VenueProfilePage() {
 
       {/* Amenities */}
       <div className="mt-5 rounded-3xl border border-sand bg-surface p-5">
-        <div className="mb-3 font-semibold">Удобства</div>
+        <div className="mb-3 font-semibold">{t("owner.venue.amenities")}</div>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(AMENITY_LABELS) as Amenity[]).map((a) => {
             const Icon = AMENITY_ICONS[a];
@@ -151,7 +153,7 @@ export default function VenueProfilePage() {
                 }`}
               >
                 <Icon className="h-4 w-4" />
-                {AMENITY_LABELS[a]}
+                {t(`enums.amenities.${a}`)}
                 {on && <Check className="h-3.5 w-3.5" />}
               </button>
             );
