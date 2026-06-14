@@ -1,43 +1,30 @@
-import { Search, CalendarCheck, Wallet, PartyPopper } from "lucide-react";
+"use client";
 
-const STEPS = [
-  {
-    icon: Search,
-    title: "Найдите чайхану",
-    text: "Фильтруйте по району, цене, блюду и удобствам — от тапчана до банкетного зала.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "Забронируйте кабинку",
-    text: "Выберите изолированную комнату, дату и закажите основное блюдо заранее.",
-  },
-  {
-    icon: Wallet,
-    title: "Соберите кассу",
-    text: "Оплатите задаток через CLICK и разделите сумму между друзьями в один тап.",
-  },
-  {
-    icon: PartyPopper,
-    title: "Проведите гап",
-    text: "Заведение получает бронь и напоминания. Вам остаётся только наслаждаться вечером.",
-  },
-];
+import { Search, CalendarCheck, Wallet, PartyPopper } from "lucide-react";
+import { useT } from "@/i18n/LocaleProvider";
+
+const ICONS = [Search, CalendarCheck, Wallet, PartyPopper];
 
 export function HowItWorks() {
+  const { t } = useT();
+  const steps = [1, 2, 3, 4].map((n, i) => ({
+    icon: ICONS[i],
+    title: t(`how.s${n}Title`),
+    text: t(`how.s${n}Text`),
+  }));
+
   return (
     <section id="how" className="border-t border-sand bg-cream">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="text-center">
-          <h2 className="font-display text-3xl font-bold sm:text-4xl">Как это работает</h2>
-          <p className="mx-auto mt-2 max-w-md text-muted">
-            Организовать давра — теперь дело пары минут, а не десяти звонков
-          </p>
+          <h2 className="font-display text-3xl font-bold sm:text-4xl">{t("how.title")}</h2>
+          <p className="mx-auto mt-2 max-w-md text-muted">{t("how.subtitle")}</p>
         </div>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((s, i) => (
+          {steps.map((s, i) => (
             <div
-              key={s.title}
+              key={i}
               className="relative rounded-3xl border border-sand bg-surface p-6 shadow-soft"
             >
               <span className="absolute right-5 top-5 font-display text-3xl font-bold text-sand-dark">

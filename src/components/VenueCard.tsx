@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { MapPin, BadgeCheck } from "lucide-react";
 import type { Venue } from "@/lib/venues";
-import { formatSomShort } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 import { CoverArt } from "./CoverArt";
 import { Stars } from "./Stars";
 import { AMENITY_ICONS } from "./icons";
 
 export function VenueCard({ venue, onBook }: { venue: Venue; onBook: (v: Venue) => void }) {
+  const { t, moneyShort } = useT();
   const previewAmenities = venue.amenities.slice(0, 4);
 
   return (
@@ -25,7 +26,7 @@ export function VenueCard({ venue, onBook }: { venue: Venue; onBook: (v: Venue) 
         />
         {venue.featured && (
           <span className="absolute left-3 top-3 rounded-full bg-saffron px-2.5 py-1 text-xs font-bold text-ink shadow-soft">
-            ★ Популярное
+            ★ {t("card.featured")}
           </span>
         )}
       </div>
@@ -45,9 +46,9 @@ export function VenueCard({ venue, onBook }: { venue: Venue; onBook: (v: Venue) 
 
         <div className="mt-2 flex items-center gap-1 text-sm text-muted">
           <MapPin className="h-3.5 w-3.5 text-clay" />
-          {venue.district}
+          {t(`enums.districts.${venue.district}`)}
           <span className="text-sand-dark">·</span>
-          <span>до {venue.capacityMax} мест</span>
+          <span>{t("card.upToSeats", { n: venue.capacityMax })}</span>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -56,7 +57,7 @@ export function VenueCard({ venue, onBook }: { venue: Venue; onBook: (v: Venue) 
               key={d}
               className="rounded-full bg-cream px-2.5 py-1 text-xs font-medium text-ink/70"
             >
-              {d}
+              {t(`enums.dishes.${d}`)}
             </span>
           ))}
         </div>
@@ -73,10 +74,10 @@ export function VenueCard({ venue, onBook }: { venue: Venue; onBook: (v: Venue) 
 
         <div className="mt-4 flex items-end justify-between border-t border-sand pt-3">
           <div>
-            <div className="text-xs text-muted">средний чек</div>
+            <div className="text-xs text-muted">{t("card.avgCheck")}</div>
             <div className="font-bold">
-              {formatSomShort(venue.avgCheckPerGuest)}{" "}
-              <span className="text-xs font-normal text-muted">/ чел</span>
+              {moneyShort(venue.avgCheckPerGuest)}{" "}
+              <span className="text-xs font-normal text-muted">{t("common.perGuest")}</span>
             </div>
           </div>
           <button
@@ -87,7 +88,7 @@ export function VenueCard({ venue, onBook }: { venue: Venue; onBook: (v: Venue) 
             }}
             className="rounded-full bg-clay px-4 py-2 text-sm font-semibold text-white transition hover:bg-clay-dark"
           >
-            Забронировать
+            {t("card.book")}
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Lora } from "next/font/google";
 import "./globals.css";
 import { TelegramProvider } from "@/components/TelegramProvider";
+import { LocaleProvider } from "@/i18n/LocaleProvider";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -46,9 +47,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${manrope.variable} ${lora.variable} h-full antialiased`}>
+    <html lang="uz" className={`${manrope.variable} ${lora.variable} h-full antialiased`}>
       <body className="min-h-full">
-        <TelegramProvider>{children}</TelegramProvider>
+        <TelegramProvider>
+          <LocaleProvider>{children}</LocaleProvider>
+        </TelegramProvider>
       </body>
     </html>
   );

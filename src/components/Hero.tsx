@@ -1,10 +1,12 @@
+"use client";
+
 import { VENUES } from "@/lib/venues";
 import { Search, Sparkles } from "lucide-react";
+import { useT } from "@/i18n/LocaleProvider";
 
 export function Hero() {
-  const avgRating = (
-    VENUES.reduce((s, v) => s + v.rating, 0) / VENUES.length
-  ).toFixed(1);
+  const { t } = useT();
+  const avgRating = (VENUES.reduce((s, v) => s + v.rating, 0) / VENUES.length).toFixed(1);
 
   return (
     <section
@@ -21,15 +23,16 @@ export function Hero() {
       <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-saffron/40 bg-saffron-soft/50 px-3 py-1 text-xs font-semibold text-clay-dark">
           <Sparkles className="h-3.5 w-3.5" />
-          Чайханы Ташкента — в одном приложении
+          {t("hero.badge")}
         </span>
 
         <h1 className="mt-5 max-w-2xl font-display text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
-          Соберите <span className="text-clay">давра</span> без хлопот
+          {t("hero.titlePre")}
+          <span className="text-clay">{t("hero.titleHi")}</span>
+          {t("hero.titlePost")}
         </h1>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-          Найдите чайхану, забронируйте кабинку, закажите плов заранее и соберите
-          кассу гапа — всё в одном месте. Заведение получит бронь моментально.
+          {t("hero.subtitle")}
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -38,21 +41,21 @@ export function Hero() {
             className="inline-flex items-center gap-2 rounded-full bg-clay px-6 py-3.5 text-base font-semibold text-white shadow-lift transition hover:bg-clay-dark"
           >
             <Search className="h-5 w-5" />
-            Подобрать чайхану
+            {t("hero.ctaPrimary")}
           </a>
           <a
             href="#how"
             className="inline-flex items-center rounded-full border border-sand-dark bg-surface px-6 py-3.5 text-base font-semibold text-ink/80 transition hover:bg-sand/40"
           >
-            Как это работает
+            {t("hero.ctaSecondary")}
           </a>
         </div>
 
         <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm">
-          <Stat value={`${VENUES.length}`} label="заведений" />
-          <Stat value="10" label="районов города" />
-          <Stat value={`★ ${avgRating}`} label="средний рейтинг" />
-          <Stat value="CLICK" label="оплата задатка" />
+          <Stat value={`${VENUES.length}`} label={t("hero.statVenues")} />
+          <Stat value="10" label={t("hero.statDistricts")} />
+          <Stat value={`★ ${avgRating}`} label={t("hero.statRating")} />
+          <Stat value="CLICK" label={t("hero.statPayment")} />
         </div>
       </div>
     </section>

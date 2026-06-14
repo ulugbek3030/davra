@@ -4,16 +4,16 @@ import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X, MapPin } from "lucide-react";
 import type { Venue, District, Dish, Amenity } from "@/lib/venues";
 import { DISTRICTS, DISHES, AMENITY_LABELS } from "@/lib/venues";
-import { plural } from "@/lib/utils";
+import { useT } from "@/i18n/LocaleProvider";
 import { VenueCard } from "./VenueCard";
 import { BookingSheet } from "./BookingSheet";
 import { AMENITY_ICONS } from "./icons";
 
 type Sort = "rating" | "price-asc" | "price-desc";
-const PRICE_CHIPS: { level: 1 | 2 | 3; label: string }[] = [
-  { level: 1, label: "● Эконом" },
-  { level: 2, label: "●● Средний" },
-  { level: 3, label: "●●● Премиум" },
+const PRICE_CHIPS: { level: 1 | 2 | 3; key: string; dots: string }[] = [
+  { level: 1, key: "catalog.priceEconom", dots: "●" },
+  { level: 2, key: "catalog.priceMid", dots: "●●" },
+  { level: 3, key: "catalog.pricePremium", dots: "●●●" },
 ];
 
 function toggle<T>(set: Set<T>, item: T): Set<T> {
@@ -24,6 +24,7 @@ function toggle<T>(set: Set<T>, item: T): Set<T> {
 }
 
 export function Catalog({ venues }: { venues: Venue[] }) {
+  const { t } = useT();
   const [query, setQuery] = useState("");
   const [district, setDistrict] = useState<District | "">("");
   const [dishes, setDishes] = useState<Set<Dish>>(new Set());
@@ -65,10 +66,9 @@ export function Catalog({ venues }: { venues: Venue[] }) {
     <section id="catalog" className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-display text-2xl font-bold sm:text-3xl">Чайханы Ташкента</h2>
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">{t("catalog.title")}</h2>
           <p className="mt-1 text-muted">
-            {filtered.length} {plural(filtered.length, ["заведение", "заведения", "заведений"])}{" "}
-            для вашего гапа
+            {filtered.length} {t("catalog.countSuffix")}
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function Catalog({ venues }: { venues: Venue[] }) {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Поиск по названию…"
+              placeholder={t("catalog.searchPlaceholder")}
               className="w-full bg-transparent text-sm outline-none placeholder:text-muted"
             />
           </div>
@@ -93,10 +93,10 @@ export function Catalog({ venues }: { venues: Venue[] }) {
               onChange={(e) => setDistrict(e.target.value as District | "")}
               className="bg-transparent text-sm font-medium outline-none"
             >
-              <option value="">Все районы</option>
+              <option value="">{t("catalog.allDistricts")}</option>
               {DISTRICTS.map((d) => (
                 <option key={d} value={d}>
-                  {d}
+                  {t(`enums.districts.${d}`)}
                 </option>
               ))}
             </select>
@@ -107,9 +107,9 @@ export function Catalog({ venues }: { venues: Venue[] }) {
             onChange={(e) => setSort(e.target.value as Sort)}
             className="rounded-full border border-sand bg-cream px-4 py-2.5 text-sm font-medium outline-none"
           >
-            <option value="rating">По рейтингу</option>
-            <option value="price-asc">Сначала дешевле</option>
-            <option value="price-desc">Сначала дороже</option>
+            <option value="rating">{t("catalog.sortRating")}</option>
+            <option value="price-asc">{t("catalog.sortPriceAsc")}</option>
+            <option value="price-desc">{t("catalog.sortPriceDesc")}</option>
           </select>
 
           <button
@@ -119,7 +119,7 @@ export function Catalog({ venues }: { venues: Venue[] }) {
             }`}
           >
             <SlidersHorizontal className="h-4 w-4" />
-            Удобства
+            {t("catalog.amenities")}
           </button>
 
           {activeCount > 0 && (
@@ -128,7 +128,7 @@ export function Catalog({ venues }: { venues: Venue[] }) {
               className="flex items-center gap-1 rounded-full px-3 py-2.5 text-sm font-medium text-clay transition hover:bg-clay/5"
             >
               <X className="h-4 w-4" />
-              Сбросить ({activeCount})
+              {t("catalog.reset")} ({activeCount})
             </button>
           )}
         </div>
@@ -137,13 +137,13 @@ export function Catalog({ venues }: { venues: Venue[] }) {
         <div className="mt-3 flex flex-wrap gap-1.5">
           {PRICE_CHIPS.map((p) => (
             <Chip key={p.level} active={prices.has(p.level)} onClick={() => setPrices(toggle(prices, p.level))}>
-              {p.label}
+              {p.dots} {t(p.key)}
             </Chip>
           ))}
           <span className="mx-1 self-center text-sand-dark">|</span>
           {DISHES.map((d) => (
             <Chip key={d} active={dishes.has(d)} onClick={() => setDishes(toggle(dishes, d))}>
-              {d}
+              {t(`enums.dishes.${d}`)}
             </Chip>
           ))}
         </div>
@@ -156,7 +156,7 @@ export function Catalog({ venues }: { venues: Venue[] }) {
               return (
                 <Chip key={a} active={amenities.has(a)} onClick={() => setAmenities(toggle(amenities, a))}>
                   <Icon className="h-3.5 w-3.5" />
-                  {AMENITY_LABELS[a]}
+                  {t(`enums.amenities.${a}`)}
                 </Chip>
               );
             })}
@@ -167,13 +167,13 @@ export function Catalog({ venues }: { venues: Venue[] }) {
       {/* Results */}
       {filtered.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-sand-dark bg-surface py-16 text-center">
-          <p className="font-display text-xl font-bold">Ничего не нашлось</p>
-          <p className="mt-1 text-muted">Попробуйте смягчить фильтры</p>
+          <p className="font-display text-xl font-bold">{t("catalog.emptyTitle")}</p>
+          <p className="mt-1 text-muted">{t("catalog.emptyText")}</p>
           <button
             onClick={reset}
             className="mt-4 rounded-full bg-clay px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-clay-dark"
           >
-            Сбросить фильтры
+            {t("catalog.emptyReset")}
           </button>
         </div>
       ) : (
