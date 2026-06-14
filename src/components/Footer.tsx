@@ -36,7 +36,9 @@ export function Footer() {
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted">{t("footer.tagline")}</p>
             <a
-              href="#"
+              href="https://t.me/Davra_choyxona_bot"
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-4 inline-flex items-center gap-2 rounded-full bg-teal px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-dark"
             >
               <Send className="h-4 w-4" />

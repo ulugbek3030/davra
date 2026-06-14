@@ -13,7 +13,7 @@ export default function RoomsPage() {
 
   const add = () => {
     if (!name.trim()) return;
-    setRooms((rs) => [...rs, { id: `r-${Date.now()}`, name: name.trim(), type, seats }]);
+    setRooms((rs) => [...rs, { id: crypto.randomUUID(), name: name.trim(), type, seats }]);
     setName("");
     setSeats(12);
     setType("kabinka");

@@ -84,7 +84,9 @@ export default function VenueProfilePage() {
               <Field label="Район">
                 <select className={inputCls} value={district} onChange={(e) => { setDistrict(e.target.value); touch(); }}>
                   {DISTRICTS.map((d) => (
-                    <option key={d}>{d}</option>
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
                   ))}
                 </select>
               </Field>

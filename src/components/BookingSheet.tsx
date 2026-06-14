@@ -28,7 +28,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
   const [roomId, setRoomId] = useState(venue.rooms[0]?.id ?? "");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("19:00");
-  const [guests, setGuests] = useState(8);
+  const [guests, setGuests] = useState(() => Math.min(8, venue.rooms[0]?.seats ?? 8));
   const [dishQtys, setDishQtys] = useState<Record<string, number>>({});
   const [splitKassa, setSplitKassa] = useState(false);
   const [paid, setPaid] = useState(false);
@@ -129,7 +129,10 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                     {venue.rooms.map((r) => (
                       <button
                         key={r.id}
-                        onClick={() => setRoomId(r.id)}
+                        onClick={() => {
+                          setRoomId(r.id);
+                          setGuests((g) => Math.min(g, r.seats));
+                        }}
                         className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition ${
                           roomId === r.id
                             ? "border-clay bg-clay/5 ring-1 ring-clay"

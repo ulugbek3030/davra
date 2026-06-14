@@ -26,12 +26,16 @@ const NAV = [
   { href: "/owner/plans", label: "Тарифы", icon: Crown },
 ];
 
-export function OwnerShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const newCount = BOOKINGS.filter((b) => b.status === "new").length;
-
-  const NavLinks = () => (
+function NavLinks({
+  pathname,
+  newCount,
+  onNavigate,
+}: {
+  pathname: string;
+  newCount: number;
+  onNavigate: () => void;
+}) {
+  return (
     <nav className="space-y-1">
       {NAV.map((item) => {
         const active = pathname === item.href;
@@ -40,7 +44,7 @@ export function OwnerShell({ children }: { children: React.ReactNode }) {
           <Link
             key={item.href}
             href={item.href}
-            onClick={() => setOpen(false)}
+            onClick={onNavigate}
             className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
               active ? "bg-clay text-white shadow-soft" : "text-ink/75 hover:bg-cream"
             }`}
@@ -61,6 +65,12 @@ export function OwnerShell({ children }: { children: React.ReactNode }) {
       })}
     </nav>
   );
+}
+
+export function OwnerShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const newCount = BOOKINGS.filter((b) => b.status === "new").length;
 
   return (
     <div className="min-h-screen bg-cream">
@@ -78,7 +88,7 @@ export function OwnerShell({ children }: { children: React.ReactNode }) {
           </span>
         </Link>
         <div className="mt-6 flex-1">
-          <NavLinks />
+          <NavLinks pathname={pathname} newCount={newCount} onNavigate={() => setOpen(false)} />
         </div>
         <Link
           href="/"
@@ -96,12 +106,12 @@ export function OwnerShell({ children }: { children: React.ReactNode }) {
           <aside className="absolute inset-y-0 left-0 w-64 bg-surface p-4 shadow-lift">
             <div className="flex items-center justify-between px-1.5 py-2">
               <span className="text-lg font-extrabold">Davra бизнес</span>
-              <button onClick={() => setOpen(false)} className="text-muted">
+              <button onClick={() => setOpen(false)} className="text-muted" aria-label="Закрыть меню">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="mt-4">
-              <NavLinks />
+              <NavLinks pathname={pathname} newCount={newCount} onNavigate={() => setOpen(false)} />
             </div>
           </aside>
         </div>
@@ -112,6 +122,7 @@ export function OwnerShell({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-sand bg-cream/85 px-4 backdrop-blur-md sm:px-6">
           <button
             onClick={() => setOpen(true)}
+            aria-label="Открыть меню"
             className="grid h-9 w-9 place-items-center rounded-lg border border-sand bg-surface lg:hidden"
           >
             <MenuIcon className="h-5 w-5" />
@@ -121,7 +132,10 @@ export function OwnerShell({ children }: { children: React.ReactNode }) {
             {MY_VENUE.district}
           </span>
           <div className="ml-auto flex items-center gap-2">
-            <button className="relative grid h-9 w-9 place-items-center rounded-full border border-sand bg-surface text-muted">
+            <button
+              aria-label="Уведомления"
+              className="relative grid h-9 w-9 place-items-center rounded-full border border-sand bg-surface text-muted"
+            >
               <Bell className="h-[18px] w-[18px]" />
               {newCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-clay px-1 text-[10px] font-bold text-white">

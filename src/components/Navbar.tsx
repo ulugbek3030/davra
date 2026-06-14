@@ -37,7 +37,7 @@ export function Navbar() {
         </button>
 
         <div className="ml-auto flex items-center gap-2">
-          <LanguageSwitcher className="hidden md:flex" />
+          <LanguageSwitcher />
           <Link
             href="/owner"
             className="hidden rounded-full px-4 py-2 text-sm font-semibold text-ink/80 transition hover:bg-sand/60 sm:block"

@@ -106,6 +106,7 @@ export default function AdminVenuesPage() {
                   </button>
                   <button
                     onClick={() => reject(v.id)}
+                    aria-label="Отклонить"
                     className="inline-flex items-center gap-1.5 rounded-full border border-sand px-3 py-2 text-sm font-semibold text-muted transition hover:bg-cream"
                   >
                     <X className="h-4 w-4" />

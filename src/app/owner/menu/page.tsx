@@ -14,7 +14,7 @@ export default function MenuPage() {
 
   const add = () => {
     const p = parseInt(price.replace(/\D/g, ""), 10);
-    if (!name.trim() || !p) return;
+    if (!name.trim() || Number.isNaN(p) || p < 0) return;
     setItems((xs) => [{ name: name.trim(), price: p, isMain }, ...xs]);
     setName("");
     setPrice("");
