@@ -1,26 +1,92 @@
 @import "tailwindcss";
 
+/* ===== Davra design system (Tailwind v4) ===== */
+@theme {
+  /* Warm "choyxona" canvas + suzani-inspired accents */
+  --color-cream: #fbf6ee;
+  --color-surface: #ffffff;
+  --color-ink: #241b12;
+  --color-muted: #7c6c59;
+
+  --color-clay: #be4a2f; /* primary — pomegranate terracotta */
+  --color-clay-dark: #9f3d24;
+  --color-saffron: #e2a12b; /* gold accent */
+  --color-saffron-soft: #f4d9a0;
+  --color-teal: #17596b; /* suzani indigo-teal */
+  --color-teal-dark: #0f4250;
+  --color-plum: #7a3b52;
+  --color-leaf: #4e7a4e; /* "свободно" */
+
+  --color-sand: #ece2d2; /* borders */
+  --color-sand-dark: #dccdb4;
+
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-lora);
+
+  --shadow-soft: 0 1px 2px rgba(36, 27, 18, 0.04), 0 10px 30px -14px rgba(36, 27, 18, 0.2);
+  --shadow-lift: 0 2px 6px rgba(36, 27, 18, 0.06), 0 24px 48px -20px rgba(36, 27, 18, 0.28);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-manrope), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hide scrollbar on horizontal chip rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Entrance animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fadeUp 0.5s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+
+@keyframes sheetIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.animate-sheet-in {
+  animation: sheetIn 0.32s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-overlay-in {
+  animation: overlayIn 0.25s ease both;
 }
