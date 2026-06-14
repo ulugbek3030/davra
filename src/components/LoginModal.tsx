@@ -11,7 +11,8 @@ export function LoginModal({ onClose }: { onClose: () => void }) {
   const [phone, setPhone] = useState("+998 ");
 
   const digits = phone.replace(/\D/g, "");
-  const valid = digits.length >= 9;
+  // Полный номер РУз: 998 + 9 цифр = 12
+  const valid = digits.length >= 12;
 
   const submit = () => {
     if (!valid) return;
@@ -23,7 +24,10 @@ export function LoginModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-ink/45 animate-overlay-in" onClick={onClose} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
-        <div className="pointer-events-auto w-full rounded-t-3xl bg-surface p-6 shadow-lift animate-sheet-in sm:max-w-sm sm:rounded-3xl">
+        <div
+          className="pointer-events-auto w-full rounded-t-3xl bg-surface p-6 shadow-lift animate-sheet-in sm:max-w-sm sm:rounded-3xl"
+          style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+        >
           <div className="flex items-start justify-between">
             <h3 className="font-display text-xl font-bold leading-tight">{t("auth.title")}</h3>
             <button
@@ -48,7 +52,6 @@ export function LoginModal({ onClose }: { onClose: () => void }) {
               inputMode="tel"
               type="tel"
               placeholder="+998 90 123-45-67"
-              autoFocus
               className="w-full bg-transparent text-base outline-none placeholder:text-muted"
             />
           </div>

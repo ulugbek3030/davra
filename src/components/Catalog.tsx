@@ -68,6 +68,13 @@ export function Catalog({ venues }: { venues: Venue[] }) {
     return sorted;
   }, [venues, query, district, prices, dishes, amenities, sort]);
 
+  // Когда набор результатов меняется (фильтр/сброс) — показываем панель,
+  // чтобы её нельзя было «потерять» скрытой на коротком списке.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHideFilter(false);
+  }, [filtered.length]);
+
   const activeCount =
     (district ? 1 : 0) + dishes.size + prices.size + amenities.size + (query ? 1 : 0);
 

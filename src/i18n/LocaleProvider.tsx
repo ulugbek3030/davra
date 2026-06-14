@@ -110,7 +110,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
         <button
           key={l}
           onClick={() => setLocale(l)}
-          className={`rounded-full px-2.5 py-1 transition ${
+          className={`rounded-full px-2.5 py-1.5 transition ${
             locale === l ? "bg-ink text-white" : "text-muted hover:text-ink"
           }`}
           aria-pressed={locale === l}

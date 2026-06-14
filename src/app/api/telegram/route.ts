@@ -14,11 +14,16 @@ type TgUpdate = {
 };
 
 async function tg(method: string, payload: unknown) {
-  await fetch(`https://api.telegram.org/bot${TOKEN}/${method}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TOKEN}/${method}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) console.error("Telegram API error:", method, res.status);
+  } catch (e) {
+    console.error("Telegram API fetch failed:", method, e);
+  }
 }
 
 const openAppKb = {
@@ -42,6 +47,7 @@ export async function POST(req: NextRequest) {
   const chatId = msg?.chat?.id;
   const text = msg?.text ?? "";
   const contact = msg?.contact;
+  const cmd = text.trim().split(/\s+/)[0].split("@")[0];
 
   if (chatId && contact?.phone_number) {
     // Контакт получен → регистрируем пользователя.
@@ -56,7 +62,7 @@ export async function POST(req: NextRequest) {
         "Endi choyxona tanlash, kabinka band qilish va gap kassasini yig‘ish uchun Davrani oching 👇",
       reply_markup: openAppKb,
     });
-  } else if (chatId && text.startsWith("/start")) {
+  } else if (chatId && cmd === "/start") {
     const name = msg?.from?.first_name ?? "do‘st";
     await tg("sendMessage", {
       chat_id: chatId,
@@ -71,7 +77,7 @@ export async function POST(req: NextRequest) {
         one_time_keyboard: true,
       },
     });
-  } else if (chatId && text.startsWith("/help")) {
+  } else if (chatId && cmd === "/help") {
     await tg("sendMessage", {
       chat_id: chatId,
       parse_mode: "HTML",

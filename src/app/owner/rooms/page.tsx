@@ -13,7 +13,11 @@ export default function RoomsPage() {
 
   const add = () => {
     if (!name.trim()) return;
-    setRooms((rs) => [...rs, { id: crypto.randomUUID(), name: name.trim(), type, seats }]);
+    const id =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `r-${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+    setRooms((rs) => [...rs, { id, name: name.trim(), type, seats }]);
     setName("");
     setSeats(12);
     setType("kabinka");
@@ -27,8 +31,8 @@ export default function RoomsPage() {
 
       {/* Add form */}
       <div className="mt-6 rounded-3xl border border-sand bg-surface p-4">
-        <div className="flex flex-wrap items-end gap-3">
-          <label className="min-w-[180px] flex-1">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+          <label className="w-full sm:min-w-[180px] sm:flex-1">
             <span className="mb-1.5 block text-sm font-medium text-ink/80">Название</span>
             <input
               value={name}
@@ -37,7 +41,7 @@ export default function RoomsPage() {
               className={inputCls}
             />
           </label>
-          <label className="w-44">
+          <label className="w-full sm:w-44">
             <span className="mb-1.5 block text-sm font-medium text-ink/80">Тип</span>
             <select value={type} onChange={(e) => setType(e.target.value as RoomType)} className={inputCls}>
               {(Object.keys(ROOM_TYPES) as RoomType[]).map((t) => (
@@ -62,7 +66,7 @@ export default function RoomsPage() {
           <button
             type="button"
             onClick={add}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-clay-dark"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-clay px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-clay-dark sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             Добавить

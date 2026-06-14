@@ -145,9 +145,9 @@ export default async function VenuePage({
           <div className="grid gap-3 sm:grid-cols-2">
             {venue.rooms.map((r) => (
               <div key={r.id} className="rounded-2xl border border-sand bg-surface p-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold">{r.name}</span>
-                  <span className="flex items-center gap-1 rounded-full bg-cream px-2.5 py-1 text-sm font-semibold">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="min-w-0 flex-1 truncate font-semibold">{r.name}</span>
+                  <span className="flex shrink-0 items-center gap-1 rounded-full bg-cream px-2.5 py-1 text-sm font-semibold">
                     <Users className="h-3.5 w-3.5 text-clay" />
                     {r.seats}
                   </span>

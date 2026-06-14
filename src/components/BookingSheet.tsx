@@ -28,7 +28,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
   const [roomId, setRoomId] = useState(venue.rooms[0]?.id ?? "");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("19:00");
-  const [guests, setGuests] = useState(() => Math.min(8, venue.rooms[0]?.seats ?? 8));
+  const [guests, setGuests] = useState(() => Math.max(2, Math.min(8, venue.rooms[0]?.seats ?? 8)));
   const [dishQtys, setDishQtys] = useState<Record<string, number>>({});
   const [splitKassa, setSplitKassa] = useState(false);
   const [paid, setPaid] = useState(false);
@@ -131,7 +131,7 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
                         key={r.id}
                         onClick={() => {
                           setRoomId(r.id);
-                          setGuests((g) => Math.min(g, r.seats));
+                          setGuests((g) => Math.max(2, Math.min(g, r.seats)));
                         }}
                         className={`flex w-full items-center justify-between rounded-2xl border p-4 text-left transition ${
                           roomId === r.id
@@ -297,7 +297,10 @@ export function BookingSheet({ venue, onClose }: { venue: Venue; onClose: () => 
               </div>
 
               {/* Footer */}
-              <div className="flex items-center gap-3 border-t border-sand px-5 py-4">
+              <div
+                className="flex items-center gap-3 border-t border-sand px-5 pt-4"
+                style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+              >
                 {step > 0 && (
                   <button
                     onClick={() => {

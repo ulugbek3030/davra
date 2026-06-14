@@ -42,7 +42,7 @@ export function Navbar() {
           <ChevronDown className="h-3.5 w-3.5 text-muted" />
         </button>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex min-w-0 items-center gap-2">
           <LanguageSwitcher />
           <Link
             href="/owner"
@@ -53,17 +53,19 @@ export function Navbar() {
 
           {user ? (
             <div className="flex items-center gap-1.5">
-              <span className="max-w-[140px] truncate rounded-full border border-sand bg-surface px-3 py-2 text-sm font-semibold">
+              <span className="max-w-[96px] truncate rounded-full border border-sand bg-surface px-3 py-2 text-sm font-semibold sm:max-w-[140px]">
                 {user.name || user.phone}
               </span>
-              <button
-                onClick={logout}
-                aria-label={t("nav.logout")}
-                title={t("nav.logout")}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-sand bg-surface text-muted transition hover:text-clay"
-              >
-                <LogOut className="h-[18px] w-[18px]" />
-              </button>
+              {user.source !== "telegram" && (
+                <button
+                  onClick={logout}
+                  aria-label={t("nav.logout")}
+                  title={t("nav.logout")}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-sand bg-surface text-muted transition hover:text-clay"
+                >
+                  <LogOut className="h-[18px] w-[18px]" />
+                </button>
+              )}
             </div>
           ) : (
             <button

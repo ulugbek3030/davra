@@ -12,7 +12,10 @@ export function VenueDetailActions({ venue }: { venue: Venue }) {
   return (
     <>
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-sand bg-surface/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <div
+          className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 pt-3 sm:px-6"
+          style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+        >
           <div>
             <div className="flex items-center gap-2">
               <span className="text-lg font-bold">

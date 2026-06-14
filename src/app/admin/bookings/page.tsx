@@ -47,7 +47,31 @@ export default function AdminBookingsPage() {
         ))}
       </div>
 
-      <div className="mt-5 overflow-x-auto rounded-3xl border border-sand bg-surface">
+      {/* Mobile: карточки вместо широкой таблицы */}
+      <div className="mt-5 space-y-3 sm:hidden">
+        {visible.map((b) => (
+          <div key={b.id} className="rounded-2xl border border-sand bg-surface p-4">
+            <div className="flex items-start justify-between gap-2">
+              <span className="font-semibold">{b.venue}</span>
+              <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${STATUS_CLS[b.status]}`}>
+                {STATUS_LABEL[b.status]}
+              </span>
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
+              <div><span className="text-muted">Группа: </span>{b.group} · {b.guests}</div>
+              <div><span className="text-muted">Дата: </span>{b.date}</div>
+              <div><span className="text-muted">GMV: </span><span className="tabular-nums">{formatSomShort(b.gmv)}</span></div>
+              <div>
+                <span className="text-muted">Комиссия: </span>
+                <span className="font-semibold tabular-nums text-leaf">+{formatSom(b.commission)}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: таблица */}
+      <div className="mt-5 hidden overflow-x-auto rounded-3xl border border-sand bg-surface sm:block">
         <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr className="border-b border-sand text-left text-xs uppercase tracking-wide text-muted">

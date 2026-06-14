@@ -23,7 +23,7 @@ export default function TgDemoPage() {
 
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-2">
           {/* Phone */}
-          <div className="mx-auto w-[330px] max-w-full overflow-hidden rounded-[2.6rem] border-[10px] border-[#15171a] shadow-lift">
+          <div className="mx-auto w-full max-w-[330px] overflow-hidden rounded-[2.6rem] border-[10px] border-[#15171a] shadow-lift">
             {/* TG header */}
             <div className="flex items-center gap-2.5 bg-[#527da3] px-4 pb-3 pt-4 text-white">
               <span className="grid h-9 w-9 place-items-center rounded-full bg-white/20 text-sm font-bold">D</span>
