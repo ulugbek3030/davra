@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, SlidersHorizontal, X, MapPin } from "lucide-react";
 import type { Venue, District, Dish, Amenity } from "@/lib/venues";
 import { DISTRICTS, DISHES, AMENITY_LABELS } from "@/lib/venues";
@@ -33,6 +33,23 @@ export function Catalog({ venues }: { venues: Venue[] }) {
   const [sort, setSort] = useState<Sort>("rating");
   const [showMore, setShowMore] = useState(false);
   const [booking, setBooking] = useState<Venue | null>(null);
+  const [hideFilter, setHideFilter] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  // Прячем панель фильтров при скролле вниз — но только когда она уже «прилипла» к верху
+  // (иначе осталось бы пустое место). При скролле вверх показываем. Так фильтр не перекрывает карточки.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const stuck = (barRef.current?.getBoundingClientRect().top ?? 999) <= 70;
+      if (y > lastY && stuck) setHideFilter(true);
+      else if (y < lastY - 4) setHideFilter(false);
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -74,7 +91,11 @@ export function Catalog({ venues }: { venues: Venue[] }) {
       </div>
 
       {/* Filter bar */}
-      <div className="sticky top-16 z-30 mb-7 rounded-3xl border border-sand bg-surface/95 p-3 shadow-soft backdrop-blur-md">
+      <div
+        ref={barRef}
+        style={{ transform: hideFilter ? "translateY(-160%)" : "translateY(0)" }}
+        className="sticky top-16 z-30 mb-7 rounded-3xl border border-sand bg-surface/95 p-3 shadow-soft backdrop-blur-md transition-transform duration-300 will-change-transform"
+      >
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-full border border-sand bg-cream px-4 py-2.5">
             <Search className="h-4 w-4 shrink-0 text-muted" />
@@ -133,8 +154,8 @@ export function Catalog({ venues }: { venues: Venue[] }) {
           )}
         </div>
 
-        {/* Price + dishes chips */}
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        {/* Price + dishes chips — single scrollable row (mobile-friendly) */}
+        <div className="no-scrollbar mt-3 flex flex-nowrap items-center gap-1.5 overflow-x-auto">
           {PRICE_CHIPS.map((p) => (
             <Chip key={p.level} active={prices.has(p.level)} onClick={() => setPrices(toggle(prices, p.level))}>
               {p.dots} {t(p.key)}
@@ -201,7 +222,7 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+      className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-medium transition ${
         active
           ? "border-clay bg-clay text-white"
           : "border-sand bg-surface text-ink/75 hover:border-sand-dark"
