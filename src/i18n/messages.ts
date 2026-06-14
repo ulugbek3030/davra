@@ -15,7 +15,14 @@ type Dict = Record<string, unknown>;
 const uz: Dict = {
   money: { som: "so‘m", k: "ming", m: "mln", b: "mlrd" },
   common: { city: "Toshkent", perGuest: "/kishi", guests: "kishi" },
-  nav: { forVenues: "Muassasalar uchun", login: "Kirish" },
+  nav: { forVenues: "Muassasalar uchun", login: "Kirish", logout: "Chiqish" },
+  auth: {
+    title: "Kirish yoki ro‘yxatdan o‘tish",
+    phoneLabel: "Telefon raqamingiz",
+    submit: "Davom etish",
+    hint: "SMS-kodsiz — raqamingizni kiriting va tayyor.",
+    close: "Yopish",
+  },
   hero: {
     badge: "Toshkent choyxonalari — bitta ilovada",
     titlePre: "",
@@ -123,7 +130,14 @@ const uz: Dict = {
 const uzc: Dict = {
   money: { som: "сўм", k: "минг", m: "млн", b: "млрд" },
   common: { city: "Тошкент", perGuest: "/киши", guests: "киши" },
-  nav: { forVenues: "Муассасалар учун", login: "Кириш" },
+  nav: { forVenues: "Муассасалар учун", login: "Кириш", logout: "Чиқиш" },
+  auth: {
+    title: "Кириш ёки рўйхатдан ўтиш",
+    phoneLabel: "Телефон рақамингиз",
+    submit: "Давом этиш",
+    hint: "SMS-кодсиз — рақамингизни киритинг ва тайёр.",
+    close: "Ёпиш",
+  },
   hero: {
     badge: "Тошкент чойхоналари — битта иловада",
     titlePre: "",
@@ -231,7 +245,14 @@ const uzc: Dict = {
 const ru: Dict = {
   money: { som: "сум", k: "тыс", m: "млн", b: "млрд" },
   common: { city: "Ташкент", perGuest: "/чел", guests: "гостей" },
-  nav: { forVenues: "Для заведений", login: "Войти" },
+  nav: { forVenues: "Для заведений", login: "Войти", logout: "Выйти" },
+  auth: {
+    title: "Вход или регистрация",
+    phoneLabel: "Ваш номер телефона",
+    submit: "Продолжить",
+    hint: "Без SMS-кода — введите номер и готово.",
+    close: "Закрыть",
+  },
   hero: {
     badge: "Чайханы Ташкента — в одном приложении",
     titlePre: "Соберите ",

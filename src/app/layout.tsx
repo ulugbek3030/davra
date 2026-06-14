@@ -3,6 +3,7 @@ import { Manrope, Lora } from "next/font/google";
 import "./globals.css";
 import { TelegramProvider } from "@/components/TelegramProvider";
 import { LocaleProvider } from "@/i18n/LocaleProvider";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -50,7 +51,9 @@ export default function RootLayout({
     <html lang="uz" className={`${manrope.variable} ${lora.variable} h-full antialiased`}>
       <body className="min-h-full">
         <TelegramProvider>
-          <LocaleProvider>{children}</LocaleProvider>
+          <LocaleProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </LocaleProvider>
         </TelegramProvider>
       </body>
     </html>

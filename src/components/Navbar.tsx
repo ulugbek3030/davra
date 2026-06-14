@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { MapPin, ChevronDown } from "lucide-react";
+import { MapPin, ChevronDown, LogOut } from "lucide-react";
 import { useT, LanguageSwitcher } from "@/i18n/LocaleProvider";
+import { useAuth } from "./AuthProvider";
+import { LoginModal } from "./LoginModal";
 
 function Logo() {
   return (
@@ -25,6 +28,9 @@ function Logo() {
 
 export function Navbar() {
   const { t } = useT();
+  const { user, logout } = useAuth();
+  const [loginOpen, setLoginOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 border-b border-sand bg-cream/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
@@ -44,11 +50,33 @@ export function Navbar() {
           >
             {t("nav.forVenues")}
           </Link>
-          <button className="rounded-full bg-clay px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-clay-dark">
-            {t("nav.login")}
-          </button>
+
+          {user ? (
+            <div className="flex items-center gap-1.5">
+              <span className="max-w-[140px] truncate rounded-full border border-sand bg-surface px-3 py-2 text-sm font-semibold">
+                {user.name || user.phone}
+              </span>
+              <button
+                onClick={logout}
+                aria-label={t("nav.logout")}
+                title={t("nav.logout")}
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-sand bg-surface text-muted transition hover:text-clay"
+              >
+                <LogOut className="h-[18px] w-[18px]" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setLoginOpen(true)}
+              className="rounded-full bg-clay px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-clay-dark"
+            >
+              {t("nav.login")}
+            </button>
+          )}
         </div>
       </div>
+
+      {loginOpen && <LoginModal onClose={() => setLoginOpen(false)} />}
     </header>
   );
 }

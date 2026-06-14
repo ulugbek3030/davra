@@ -9,6 +9,7 @@ type TgUpdate = {
     text?: string;
     chat?: { id?: number };
     from?: { first_name?: string };
+    contact?: { phone_number?: string; first_name?: string; user_id?: number };
   };
 };
 
@@ -19,6 +20,10 @@ async function tg(method: string, payload: unknown) {
     body: JSON.stringify(payload),
   });
 }
+
+const openAppKb = {
+  inline_keyboard: [[{ text: "🍽 Davrani ochish", web_app: { url: WEBAPP_URL } }]],
+};
 
 export async function POST(req: NextRequest) {
   // Защита: Telegram присылает секрет в этом заголовке (задаётся в setWebhook)
@@ -34,30 +39,43 @@ export async function POST(req: NextRequest) {
   }
 
   const msg = update.message;
-  const text = msg?.text ?? "";
   const chatId = msg?.chat?.id;
+  const text = msg?.text ?? "";
+  const contact = msg?.contact;
 
-  if (chatId && text.startsWith("/start")) {
-    const name = msg?.from?.first_name ?? "друг";
+  if (chatId && contact?.phone_number) {
+    // Контакт получен → регистрируем пользователя.
+    // TODO(backend): сохранить { phone_number, user_id, first_name } в БД (блок 5).
+    const name = contact.first_name ?? msg?.from?.first_name ?? "do‘st";
     await tg("sendMessage", {
       chat_id: chatId,
       parse_mode: "HTML",
       text:
-        `Assalomu alaykum, <b>${name}</b>! 👋\n\n` +
-        "Я помогу собрать <b>давра</b> без хлопот:\n" +
-        "• найти чайхану и кабинку рядом\n" +
-        "• заказать плов заранее\n" +
-        "• собрать кассу гапа через CLICK\n\n" +
-        "Нажмите кнопку ниже 👇",
+        `Rahmat, <b>${name}</b>! ✅\n` +
+        "Siz muvaffaqiyatli ro‘yxatdan o‘tdingiz.\n\n" +
+        "Endi choyxona tanlash, kabinka band qilish va gap kassasini yig‘ish uchun Davrani oching 👇",
+      reply_markup: openAppKb,
+    });
+  } else if (chatId && text.startsWith("/start")) {
+    const name = msg?.from?.first_name ?? "do‘st";
+    await tg("sendMessage", {
+      chat_id: chatId,
+      parse_mode: "HTML",
+      text:
+        `Assalomu alaykum, <b>${name}</b>! 👋\n` +
+        "<b>Davra</b> — gap uchun choyxona bron qilish.\n\n" +
+        "Boshlash uchun telefon raqamingizni ulashing — bir tugma bilan ro‘yxatdan o‘tasiz 👇",
       reply_markup: {
-        inline_keyboard: [[{ text: "🍽 Открыть Davra", web_app: { url: WEBAPP_URL } }]],
+        keyboard: [[{ text: "📱 Telefon raqamni ulashish", request_contact: true }]],
+        resize_keyboard: true,
+        one_time_keyboard: true,
       },
     });
   } else if (chatId && text.startsWith("/help")) {
     await tg("sendMessage", {
       chat_id: chatId,
       parse_mode: "HTML",
-      text: "❓ <b>Davra</b> — бронирование чайхан для гапа.\n\n/start — открыть приложение",
+      text: "❓ <b>Davra</b> — gap uchun choyxona bron qilish.\n\n/start — boshlash",
     });
   }
 
