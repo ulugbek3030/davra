@@ -4,6 +4,9 @@ const TOKEN = process.env.BOT_TOKEN ?? "";
 const SECRET = process.env.TG_WEBHOOK_SECRET ?? "";
 const WEBAPP_URL = process.env.WEBAPP_URL ?? "https://davra-five.vercel.app";
 
+// Экранируем пользовательский текст перед вставкой в parse_mode: HTML
+const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 type TgUpdate = {
   message?: {
     text?: string;
@@ -32,7 +35,11 @@ const openAppKb = {
 
 export async function POST(req: NextRequest) {
   // Защита: Telegram присылает секрет в этом заголовке (задаётся в setWebhook)
-  if (SECRET && req.headers.get("x-telegram-bot-api-secret-token") !== SECRET) {
+  // Fail-closed: без секрета вебхук не обслуживается (иначе любой POST принимался бы).
+  if (!SECRET) {
+    return new NextResponse("misconfigured", { status: 503 });
+  }
+  if (req.headers.get("x-telegram-bot-api-secret-token") !== SECRET) {
     return new NextResponse("forbidden", { status: 403 });
   }
 
@@ -52,7 +59,7 @@ export async function POST(req: NextRequest) {
   if (chatId && contact?.phone_number) {
     // Контакт получен → регистрируем пользователя.
     // TODO(backend): сохранить { phone_number, user_id, first_name } в БД (блок 5).
-    const name = contact.first_name ?? msg?.from?.first_name ?? "do‘st";
+    const name = esc(contact.first_name ?? msg?.from?.first_name ?? "do‘st");
     await tg("sendMessage", {
       chat_id: chatId,
       parse_mode: "HTML",
@@ -63,7 +70,7 @@ export async function POST(req: NextRequest) {
       reply_markup: openAppKb,
     });
   } else if (chatId && cmd === "/start") {
-    const name = msg?.from?.first_name ?? "do‘st";
+    const name = esc(msg?.from?.first_name ?? "do‘st");
     await tg("sendMessage", {
       chat_id: chatId,
       parse_mode: "HTML",
